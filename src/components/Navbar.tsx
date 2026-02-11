@@ -17,7 +17,7 @@ const NAV_ITEMS = [
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [user, setUser] = useState<null | { id: string }>(null)
-  console.log(user)
+
   const location = useLocation()
 
   useEffect(() => {
