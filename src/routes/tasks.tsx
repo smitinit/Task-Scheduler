@@ -5,6 +5,7 @@ import { getTasks } from '@/action/get-task'
 import TasksHeader from '@/components/Task/TasksHeader'
 import TaskStats from '@/components/Task/TaskStats'
 import TaskSection from '@/components/Task/TaskSection'
+import NotificationListener from '@/components/NotificationListener'
 
 export const Route = createFileRoute('/tasks')({
   loader: async () => {
@@ -17,7 +18,7 @@ export const Route = createFileRoute('/tasks')({
 function TasksPage() {
   const { tasks } = Route.useLoaderData()
 
-  // const router = useRouter()
+  const router = useRouter()
 
   const now = new Date()
 
@@ -34,16 +35,39 @@ function TasksPage() {
 
   const completedTasks = tasks.filter((t) => t.status === 'completed')
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     router.invalidate()
-  //   }, 60000) // 1 minute
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | null = null
 
-  //   return () => clearInterval(interval)
-  // }, [])
+    function start() {
+      interval = setInterval(() => {
+        router.invalidate()
+      }, 60_000)
+    }
+
+    function stop() {
+      if (interval) clearInterval(interval)
+    }
+
+    function handleVisibility() {
+      if (document.visibilityState === 'visible') {
+        start()
+      } else {
+        stop()
+      }
+    }
+
+    handleVisibility()
+    document.addEventListener('visibilitychange', handleVisibility)
+
+    return () => {
+      stop()
+      document.removeEventListener('visibilitychange', handleVisibility)
+    }
+  }, [router])
 
   return (
     <div className="max-w-6xl mx-auto py-10 space-y-6">
+      <NotificationListener tasks={tasks} />
       <TasksHeader />
 
       <TaskStats
