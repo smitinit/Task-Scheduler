@@ -6,7 +6,15 @@ import { tasks } from '@/db/schema'
 export const Route = createFileRoute('/api/sync-task-status')({
   server: {
     handlers: {
-      POST: async () => {
+      POST: async ({ request }) => {
+        const authHeader = request.headers.get('authorization')
+
+        const expected = `Bearer ${process.env.CRON_SECRET}`
+
+        if (!authHeader || authHeader !== expected) {
+          return new Response('Unauthorized', { status: 401 })
+        }
+
         const now = new Date()
 
         await db

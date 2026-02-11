@@ -10,7 +10,6 @@ const NAV_ITEMS = [
   { label: 'Dashboard', to: '/dashboard' },
   { label: 'Calendar', to: '/calendar' },
   { label: 'Insights', to: '/insights' },
-  { label: 'Demo', to: '/demo' },
 ]
 
 export default function Navbar() {
