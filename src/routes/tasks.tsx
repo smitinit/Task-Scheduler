@@ -6,6 +6,7 @@ import TasksHeader from '@/components/Task/TasksHeader'
 import TaskStats from '@/components/Task/TaskStats'
 import TaskSection from '@/components/Task/TaskSection'
 import { authMiddleware } from '@/middleware/auth'
+import { TasksPageSkeleton } from '@/components/Skeletons/TasksSkeleton'
 
 export const Route = createFileRoute('/tasks')({
   loader: async () => {
@@ -13,6 +14,7 @@ export const Route = createFileRoute('/tasks')({
     return { tasks }
   },
   component: TasksPage,
+  pendingComponent: TasksPageSkeleton,
   server: {
     middleware: [authMiddleware],
   },
