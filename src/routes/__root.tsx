@@ -10,6 +10,8 @@ import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/integrations/next-themes/theme-provider'
+import { GlobalErrorBoundary } from '@/components/GlobalErrorBoundary'
+import { GlobalNotFound } from '@/components/GlobalNotFound'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -38,6 +40,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   }),
 
   shellComponent: RootDocument,
+  errorComponent: GlobalErrorBoundary,
+  notFoundComponent: GlobalNotFound,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -54,10 +58,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           disableTransitionOnChange
         >
           <Navbar />
-          <main
-            className="mx-auto max-w-6xl p-4 bg-linear-to-b from-background to-muted/20
-"
-          >
+          <main className="mx-auto max-w-6xl p-4 bg-linear-to-b from-background to-muted/20">
             {children}
           </main>
         </ThemeProvider>

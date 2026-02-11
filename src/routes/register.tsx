@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { Loader, UserPlus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -100,7 +101,12 @@ function RegisterPage() {
             onClick={handleRegister}
             disabled={loading}
           >
-            {loading ? 'Creating account...' : 'Register'}
+            {loading ? (
+              <Loader className="h-4 w-4 animate-spin" />
+            ) : (
+              <UserPlus className="h-4 w-4" />
+            )}
+            Register
           </Button>
 
           <div className="text-sm text-muted-foreground text-center">

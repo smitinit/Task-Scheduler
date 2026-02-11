@@ -3,7 +3,6 @@ import { Link, useLocation } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
 import LogoutButton from './LogoutButton'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { useUser } from '@/hooks/useUser'
 
@@ -19,6 +18,10 @@ export default function Navbar() {
   const { data: user, isLoading } = useUser()
   const location = useLocation()
 
+  if (location.pathname === '/login' || location.pathname === '/register') {
+    return null
+  }
+
   return (
     <header className="w-full border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="mx-auto max-w-6xl px-4">
@@ -30,33 +33,34 @@ export default function Navbar() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-6">
-            {NAV_ITEMS.map((item) => {
-              const isActive = location.pathname.startsWith(item.to)
+            {user &&
+              NAV_ITEMS.map((item) => {
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    activeProps={{
+                      className: 'text-foreground font-medium',
+                    }}
+                    inactiveProps={{
+                      className: 'text-muted-foreground',
+                    }}
+                    className="text-sm transition-colors hover:text-foreground"
+                  >
+                    {item.label}
+                  </Link>
+                )
+              })}
 
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={cn(
-                    'text-sm transition-colors hover:text-foreground',
-                    isActive
-                      ? 'text-foreground font-medium'
-                      : 'text-muted-foreground',
-                  )}
-                >
-                  {item.label}
-                </Link>
-              )
-            })}
-
-            <ThemeToggle />
-            {isLoading ? null : user && <LogoutButton />}
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              {isLoading ? null : user && <LogoutButton />}
+            </div>
           </nav>
 
           {/* Mobile Toggle */}
           <div className="md:hidden flex items-center gap-2">
             <ThemeToggle />
-
             <Button variant="ghost" size="icon" onClick={() => setOpen(!open)}>
               {open ? <X size={18} /> : <Menu size={18} />}
             </Button>
@@ -68,25 +72,25 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden border-t bg-background">
           <div className="flex flex-col px-4 py-3 space-y-3">
-            {NAV_ITEMS.map((item) => {
-              const isActive = location.pathname.startsWith(item.to)
-
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    'text-sm transition-colors',
-                    isActive
-                      ? 'text-foreground font-medium'
-                      : 'text-muted-foreground',
-                  )}
-                >
-                  {item.label}
-                </Link>
-              )
-            })}
+            {user &&
+              NAV_ITEMS.map((item) => {
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    activeProps={{
+                      className: 'text-foreground font-medium',
+                    }}
+                    inactiveProps={{
+                      className: 'text-muted-foreground',
+                    }}
+                    className="text-sm transition-colors hover:text-foreground"
+                  >
+                    {item.label}
+                  </Link>
+                )
+              })}
+            {user && <LogoutButton />}
           </div>
         </div>
       )}

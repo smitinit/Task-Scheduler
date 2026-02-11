@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { Loader, LogInIcon, UserPlus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -21,8 +22,19 @@ function LoginPage() {
   const [loading, setLoading] = useState(false)
 
   const handleLogin = async () => {
-    setLoading(true)
     setError(null)
+
+    if (!email || !password) {
+      setError('All fields are required')
+      return
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters')
+      return
+    }
+
+    setLoading(true)
 
     try {
       await login({ data: { email, password } })
@@ -70,11 +82,16 @@ function LoginPage() {
           </div>
 
           <Button className="w-full" onClick={handleLogin} disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? (
+              <Loader className="h-4 w-4 animate-spin" />
+            ) : (
+              <LogInIcon className="h-4 w-4" />
+            )}
+            Sign In
           </Button>
 
           <div className="text-sm text-muted-foreground text-center">
-            Don’t have an account?{' '}
+            Don't have an account?{' '}
             <span
               onClick={() => navigate({ to: '/register' })}
               className="underline cursor-pointer hover:text-foreground"
