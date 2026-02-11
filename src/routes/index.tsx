@@ -11,6 +11,7 @@ import {
   intervalToDuration,
 } from 'date-fns'
 
+import { TriangleAlert } from 'lucide-react'
 import type { z } from 'zod'
 import { taskSchema } from '@/zod/task-schema'
 
@@ -22,10 +23,15 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
+import { getTasksForForm } from '@/action/get-tasks-for-form'
 
 type TaskFormValues = z.infer<typeof taskSchema>
 
 export const Route = createFileRoute('/')({
+  loader: async () => {
+    const tasks = await getTasksForForm()
+    return { tasks }
+  },
   component: TaskFormPage,
 })
 
@@ -62,6 +68,21 @@ export function formatTaskDuration(start: string, end: string) {
   return parts.join(' ')
 }
 
+function findOverlappingTasks(
+  start: Date,
+  end: Date,
+  tasks: Awaited<ReturnType<typeof getTasksForForm>>,
+) {
+  return tasks.filter((task) => {
+    const existingStart = new Date(task.startTime)
+    const existingEnd = new Date(task.endTime)
+
+    return (
+      start < existingEnd && end > existingStart && task.status !== 'completed'
+    )
+  })
+}
+
 /* ---------------- Chips ---------------- */
 
 const durationPresets = [
@@ -82,6 +103,7 @@ const notifyPresets = [
 
 function TaskFormPage() {
   const navigate = useNavigate()
+  const { tasks } = Route.useLoaderData()
 
   const now = roundToNext5Minutes(new Date())
 
@@ -110,6 +132,22 @@ function TaskFormPage() {
   const isCustom = !notifyPresets.some(
     (p) => p.value !== -1 && p.value === notifyValue,
   )
+
+  const overlappingTasks =
+    start && end
+      ? findOverlappingTasks(new Date(start), new Date(end), tasks)
+      : []
+
+  const hasConflict = overlappingTasks.length > 0
+
+  const lastEndTime =
+    overlappingTasks.length > 0
+      ? new Date(
+          Math.max(
+            ...overlappingTasks.map((t) => new Date(t.endTime).getTime()),
+          ),
+        )
+      : null
 
   const durationMinutes =
     start && end
@@ -326,11 +364,76 @@ function TaskFormPage() {
           </TabsContent>
         </Tabs>
 
+        {hasConflict && lastEndTime && (
+          <div className="p-3 rounded-md border dark:border-yellow-200 dark:text-yellow-500 border-yellow-600 text-yellow-800 text-sm flex flex-col gap-2">
+            <span className="flex items-center gap-2">
+              <TriangleAlert className="w-5 h-5" /> This time range overlaps
+              with existing tasks.
+            </span>
+            <div className="mt-1 text-xs">
+              Overlaps with {overlappingTasks.length} task(s):
+              <ul className="list-disc ml-4 mt-1">
+                {overlappingTasks.map((t) => (
+                  <li key={t.id} className="space-y-0.5">
+                    <div className="font-medium">{t.title}</div>
+                    <div className="text-xs text-yellow-800/80 dark:text-yellow-500/80">
+                      {(() => {
+                        const startDate = new Date(t.startTime)
+                        const endDate = new Date(t.endTime)
+
+                        const sameDay =
+                          startDate.toDateString() === endDate.toDateString()
+
+                        if (sameDay) {
+                          return (
+                            <>
+                              {format(startDate, 'MMM d')} ·{' '}
+                              {format(startDate, 'p')} - {format(endDate, 'p')}
+                            </>
+                          )
+                        }
+
+                        return (
+                          <>
+                            {format(startDate, 'MMM d · p')} →{' '}
+                            {format(endDate, 'MMM d · p')}
+                          </>
+                        )
+                      })()}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-1">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  const currentDuration = differenceInMinutes(
+                    new Date(end),
+                    new Date(start),
+                  )
+                  const newStart = lastEndTime
+                  const newEnd = addMinutes(newStart, currentDuration)
+
+                  setValue('startTime', toInputDateTime(newStart))
+                  setValue('endTime', toInputDateTime(newEnd))
+                }}
+              >
+                Use {format(lastEndTime, 'MMM d, p')} instead
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-end gap-3">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Adding...' : 'Add Task'}
           </Button>
         </div>
+
         {errors.root && (
           <div className="p-3 rounded-md bg-red-50 text-red-600 text-sm">
             {errors.root.message}

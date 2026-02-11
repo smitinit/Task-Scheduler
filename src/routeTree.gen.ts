@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TaskTaskIdRouteImport } from './routes/task.$taskId'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoDrizzleRouteImport } from './routes/demo/drizzle'
+import { Route as ApiSyncTaskStatusRouteImport } from './routes/api/sync-task-status'
 import { Route as DemoApiTqTodosRouteImport } from './routes/demo/api.tq-todos'
 
 const TasksRoute = TasksRouteImport.update({
@@ -65,6 +66,11 @@ const DemoDrizzleRoute = DemoDrizzleRouteImport.update({
   path: '/drizzle',
   getParentRoute: () => DemoRouteRoute,
 } as any)
+const ApiSyncTaskStatusRoute = ApiSyncTaskStatusRouteImport.update({
+  id: '/api/sync-task-status',
+  path: '/api/sync-task-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DemoApiTqTodosRoute = DemoApiTqTodosRouteImport.update({
   id: '/api/tq-todos',
   path: '/api/tq-todos',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/insights': typeof InsightsRoute
   '/tasks': typeof TasksRoute
+  '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/task/$taskId': typeof TaskTaskIdRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/insights': typeof InsightsRoute
   '/tasks': typeof TasksRoute
+  '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/task/$taskId': typeof TaskTaskIdRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/insights': typeof InsightsRoute
   '/tasks': typeof TasksRoute
+  '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
   '/demo/drizzle': typeof DemoDrizzleRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/task/$taskId': typeof TaskTaskIdRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/insights'
     | '/tasks'
+    | '/api/sync-task-status'
     | '/demo/drizzle'
     | '/demo/tanstack-query'
     | '/task/$taskId'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/insights'
     | '/tasks'
+    | '/api/sync-task-status'
     | '/demo/drizzle'
     | '/demo/tanstack-query'
     | '/task/$taskId'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/insights'
     | '/tasks'
+    | '/api/sync-task-status'
     | '/demo/drizzle'
     | '/demo/tanstack-query'
     | '/task/$taskId'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   InsightsRoute: typeof InsightsRoute
   TasksRoute: typeof TasksRoute
+  ApiSyncTaskStatusRoute: typeof ApiSyncTaskStatusRoute
   TaskTaskIdRoute: typeof TaskTaskIdRoute
 }
 
@@ -222,6 +235,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoDrizzleRouteImport
       parentRoute: typeof DemoRouteRoute
     }
+    '/api/sync-task-status': {
+      id: '/api/sync-task-status'
+      path: '/api/sync-task-status'
+      fullPath: '/api/sync-task-status'
+      preLoaderRoute: typeof ApiSyncTaskStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/demo/api/tq-todos': {
       id: '/demo/api/tq-todos'
       path: '/api/tq-todos'
@@ -255,6 +275,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   InsightsRoute: InsightsRoute,
   TasksRoute: TasksRoute,
+  ApiSyncTaskStatusRoute: ApiSyncTaskStatusRoute,
   TaskTaskIdRoute: TaskTaskIdRoute,
 }
 export const routeTree = rootRouteImport

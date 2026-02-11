@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import TaskCard from './TaskCard'
+import EmptyState from './EmptyState'
 import type { ServerTaskInput } from '@/zod/server-task-schema'
 
 export default function TaskSection({
@@ -13,6 +14,8 @@ export default function TaskSection({
   collapsible?: boolean
 }) {
   const [open, setOpen] = useState(true)
+
+  if (!tasks.length && title === 'Today') return <EmptyState />
 
   if (!tasks.length) return null
 

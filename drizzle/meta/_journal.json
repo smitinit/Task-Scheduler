@@ -22,6 +22,13 @@
       "when": 1770804869377,
       "tag": "0002_puzzling_champions",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770812504951,
+      "tag": "0003_low_sue_storm",
+      "breakpoints": true
     }
   ]
 }
