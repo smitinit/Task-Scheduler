@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1770716396338,
-      "tag": "0000_yielding_maverick",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1770798152197,
-      "tag": "0001_pretty_wind_dancer",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1770804869377,
-      "tag": "0002_puzzling_champions",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1770812504951,
-      "tag": "0003_low_sue_storm",
+      "when": 1770827750352,
+      "tag": "0000_clumsy_edwin_jarvis",
       "breakpoints": true
     }
   ]

@@ -16,6 +16,7 @@ export const taskStatusEnum = pgEnum('task_status', [
 
 export const tasks = pgTable('tasks', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').notNull(),
 
   title: text('title').notNull(),
   description: text('description'),
@@ -30,6 +31,9 @@ export const tasks = pgTable('tasks', {
   isFocusSession: boolean('is_focus_session').notNull().default(false),
 
   completedAt: timestamp('completed_at', { withTimezone: true }),
+
+  notifySent: boolean('notify_sent').notNull().default(false),
+  missedNotified: boolean('missed_notified').notNull().default(false),
 
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()

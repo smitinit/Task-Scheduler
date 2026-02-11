@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
+import { getCurrentSession } from '@/lib/sessions'
 import { db } from '@/db'
 import { tasks } from '@/db/schema'
 import { serverTaskSchema } from '@/zod/server-task-schema'
@@ -10,6 +11,10 @@ export const createOrUpdateTodo = createServerFn({
   .inputValidator(serverTaskSchema)
   .handler(async ({ data }) => {
     const now = new Date()
+
+    const { user } = await getCurrentSession()
+
+    if (!user) throw new Error('Unauthorized')
 
     // ---- DERIVE STATUS FROM TIME ONLY ----
     let status: 'scheduled' | 'completed' | 'missed'
@@ -33,7 +38,7 @@ export const createOrUpdateTodo = createServerFn({
           status,
           updatedAt: new Date(),
         })
-        .where(eq(tasks.id, data.id))
+        .where(and(eq(tasks.id, data.id), eq(tasks.userId, user.id)))
 
       return { success: true, id: data.id }
     }
@@ -41,6 +46,7 @@ export const createOrUpdateTodo = createServerFn({
     const [created] = await db
       .insert(tasks)
       .values({
+        userId: user.id,
         title: data.title,
         description: data.description,
         startTime: data.startTime,

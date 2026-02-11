@@ -5,7 +5,7 @@ import { getTasks } from '@/action/get-task'
 import TasksHeader from '@/components/Task/TasksHeader'
 import TaskStats from '@/components/Task/TaskStats'
 import TaskSection from '@/components/Task/TaskSection'
-import NotificationListener from '@/components/NotificationListener'
+import { authMiddleware } from '@/middleware/auth'
 
 export const Route = createFileRoute('/tasks')({
   loader: async () => {
@@ -13,6 +13,9 @@ export const Route = createFileRoute('/tasks')({
     return { tasks }
   },
   component: TasksPage,
+  server: {
+    middleware: [authMiddleware],
+  },
 })
 
 function TasksPage() {
@@ -67,7 +70,6 @@ function TasksPage() {
 
   return (
     <div className="max-w-6xl mx-auto py-10 space-y-6">
-      <NotificationListener tasks={tasks} />
       <TasksHeader />
 
       <TaskStats

@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { getTasksForForm } from '@/action/get-tasks-for-form'
+import { authMiddleware } from '@/middleware/auth'
 
 type TaskFormValues = z.infer<typeof taskSchema>
 
@@ -33,6 +34,9 @@ export const Route = createFileRoute('/')({
     return { tasks }
   },
   component: TaskFormPage,
+  server: {
+    middleware: [authMiddleware],
+  },
 })
 
 /* ---------------- Utilities ---------------- */

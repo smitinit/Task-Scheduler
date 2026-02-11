@@ -10,20 +10,28 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TasksRouteImport } from './routes/tasks'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalendarRouteImport } from './routes/calendar'
-import { Route as DemoRouteRouteImport } from './routes/demo/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TaskTaskIdRouteImport } from './routes/task.$taskId'
-import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
-import { Route as DemoDrizzleRouteImport } from './routes/demo/drizzle'
 import { Route as ApiSyncTaskStatusRouteImport } from './routes/api/sync-task-status'
-import { Route as DemoApiTqTodosRouteImport } from './routes/demo/api.tq-todos'
 
 const TasksRoute = TasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InsightsRoute = InsightsRouteImport.update({
@@ -41,11 +49,6 @@ const CalendarRoute = CalendarRouteImport.update({
   path: '/calendar',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoRouteRoute = DemoRouteRouteImport.update({
-  id: '/demo',
-  path: '/demo',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -56,115 +59,89 @@ const TaskTaskIdRoute = TaskTaskIdRouteImport.update({
   path: '/task/$taskId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
-  id: '/tanstack-query',
-  path: '/tanstack-query',
-  getParentRoute: () => DemoRouteRoute,
-} as any)
-const DemoDrizzleRoute = DemoDrizzleRouteImport.update({
-  id: '/drizzle',
-  path: '/drizzle',
-  getParentRoute: () => DemoRouteRoute,
-} as any)
 const ApiSyncTaskStatusRoute = ApiSyncTaskStatusRouteImport.update({
   id: '/api/sync-task-status',
   path: '/api/sync-task-status',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoApiTqTodosRoute = DemoApiTqTodosRouteImport.update({
-  id: '/api/tq-todos',
-  path: '/api/tq-todos',
-  getParentRoute: () => DemoRouteRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/demo': typeof DemoRouteRouteWithChildren
   '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/insights': typeof InsightsRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/tasks': typeof TasksRoute
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
-  '/demo/drizzle': typeof DemoDrizzleRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/task/$taskId': typeof TaskTaskIdRoute
-  '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/demo': typeof DemoRouteRouteWithChildren
   '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/insights': typeof InsightsRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/tasks': typeof TasksRoute
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
-  '/demo/drizzle': typeof DemoDrizzleRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/task/$taskId': typeof TaskTaskIdRoute
-  '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/demo': typeof DemoRouteRouteWithChildren
   '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/insights': typeof InsightsRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/tasks': typeof TasksRoute
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
-  '/demo/drizzle': typeof DemoDrizzleRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
   '/task/$taskId': typeof TaskTaskIdRoute
-  '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/demo'
     | '/calendar'
     | '/dashboard'
     | '/insights'
+    | '/login'
+    | '/register'
     | '/tasks'
     | '/api/sync-task-status'
-    | '/demo/drizzle'
-    | '/demo/tanstack-query'
     | '/task/$taskId'
-    | '/demo/api/tq-todos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/demo'
     | '/calendar'
     | '/dashboard'
     | '/insights'
+    | '/login'
+    | '/register'
     | '/tasks'
     | '/api/sync-task-status'
-    | '/demo/drizzle'
-    | '/demo/tanstack-query'
     | '/task/$taskId'
-    | '/demo/api/tq-todos'
   id:
     | '__root__'
     | '/'
-    | '/demo'
     | '/calendar'
     | '/dashboard'
     | '/insights'
+    | '/login'
+    | '/register'
     | '/tasks'
     | '/api/sync-task-status'
-    | '/demo/drizzle'
-    | '/demo/tanstack-query'
     | '/task/$taskId'
-    | '/demo/api/tq-todos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DemoRouteRoute: typeof DemoRouteRouteWithChildren
   CalendarRoute: typeof CalendarRoute
   DashboardRoute: typeof DashboardRoute
   InsightsRoute: typeof InsightsRoute
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
   TasksRoute: typeof TasksRoute
   ApiSyncTaskStatusRoute: typeof ApiSyncTaskStatusRoute
   TaskTaskIdRoute: typeof TaskTaskIdRoute
@@ -177,6 +154,20 @@ declare module '@tanstack/react-router' {
       path: '/tasks'
       fullPath: '/tasks'
       preLoaderRoute: typeof TasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/insights': {
@@ -200,13 +191,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo': {
-      id: '/demo'
-      path: '/demo'
-      fullPath: '/demo'
-      preLoaderRoute: typeof DemoRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -221,20 +205,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TaskTaskIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/tanstack-query': {
-      id: '/demo/tanstack-query'
-      path: '/tanstack-query'
-      fullPath: '/demo/tanstack-query'
-      preLoaderRoute: typeof DemoTanstackQueryRouteImport
-      parentRoute: typeof DemoRouteRoute
-    }
-    '/demo/drizzle': {
-      id: '/demo/drizzle'
-      path: '/drizzle'
-      fullPath: '/demo/drizzle'
-      preLoaderRoute: typeof DemoDrizzleRouteImport
-      parentRoute: typeof DemoRouteRoute
-    }
     '/api/sync-task-status': {
       id: '/api/sync-task-status'
       path: '/api/sync-task-status'
@@ -242,38 +212,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSyncTaskStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/api/tq-todos': {
-      id: '/demo/api/tq-todos'
-      path: '/api/tq-todos'
-      fullPath: '/demo/api/tq-todos'
-      preLoaderRoute: typeof DemoApiTqTodosRouteImport
-      parentRoute: typeof DemoRouteRoute
-    }
   }
 }
 
-interface DemoRouteRouteChildren {
-  DemoDrizzleRoute: typeof DemoDrizzleRoute
-  DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
-  DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
-}
-
-const DemoRouteRouteChildren: DemoRouteRouteChildren = {
-  DemoDrizzleRoute: DemoDrizzleRoute,
-  DemoTanstackQueryRoute: DemoTanstackQueryRoute,
-  DemoApiTqTodosRoute: DemoApiTqTodosRoute,
-}
-
-const DemoRouteRouteWithChildren = DemoRouteRoute._addFileChildren(
-  DemoRouteRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DemoRouteRoute: DemoRouteRouteWithChildren,
   CalendarRoute: CalendarRoute,
   DashboardRoute: DashboardRoute,
   InsightsRoute: InsightsRoute,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
   TasksRoute: TasksRoute,
   ApiSyncTaskStatusRoute: ApiSyncTaskStatusRoute,
   TaskTaskIdRoute: TaskTaskIdRoute,

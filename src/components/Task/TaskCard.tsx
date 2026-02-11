@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { formatTaskDuration } from '@/routes'
-import { toggleTaskCompletion } from '@/action/complete-task'
+import { markTaskCompletion } from '@/action/complete-task'
 import { deleteTask } from '@/action/delete-task'
 
 type Props = {
@@ -28,7 +28,7 @@ export default function TaskCard({ task }: Props) {
   const [isPending, startTransition] = useTransition()
   function handleCompleteTask() {
     startTransition(async () => {
-      await toggleTaskCompletion({ data: { id: task.id! } })
+      await markTaskCompletion({ data: { id: task.id! } })
       router.invalidate()
     })
   }
