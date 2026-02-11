@@ -54,7 +54,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           disableTransitionOnChange
         >
           <Navbar />
-          <main className="mx-auto max-w-6xl p-4">{children}</main>
+          <main
+            className="mx-auto max-w-6xl p-4 bg-linear-to-b from-background to-muted/20
+"
+          >
+            {children}
+          </main>
         </ThemeProvider>
         <Scripts />
       </body>
