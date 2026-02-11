@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
 import LogoutButton from './LogoutButton'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import { getSessionUser } from '@/action/get-user'
+import { useUser } from '@/hooks/useUser'
 
 const NAV_ITEMS = [
   { label: 'Tasks', to: '/tasks' },
@@ -16,18 +16,8 @@ const NAV_ITEMS = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
-  const [user, setUser] = useState<null | { id: string }>(null)
-
+  const { data: user, isLoading } = useUser()
   const location = useLocation()
-
-  useEffect(() => {
-    async function loadUser() {
-      const result = await getSessionUser()
-      setUser(result)
-    }
-
-    loadUser()
-  }, [])
 
   return (
     <header className="w-full border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -60,7 +50,7 @@ export default function Navbar() {
             })}
 
             <ThemeToggle />
-            {user && <LogoutButton />}
+            {isLoading ? null : user && <LogoutButton />}
           </nav>
 
           {/* Mobile Toggle */}

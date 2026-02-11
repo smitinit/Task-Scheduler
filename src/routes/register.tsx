@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -13,7 +14,7 @@ export const Route = createFileRoute('/register')({
 
 function RegisterPage() {
   const navigate = useNavigate()
-
+  const queryClient = useQueryClient()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -37,7 +38,10 @@ function RegisterPage() {
 
     try {
       await register({ data: { name, email, password } })
-
+      queryClient.setQueryData(['session-user'], {
+        name,
+        email,
+      })
       navigate({ to: '/' })
     } catch (err: any) {
       setError(err?.message || 'Registration failed')
