@@ -11,7 +11,7 @@ import {
   intervalToDuration,
 } from 'date-fns'
 
-import { TriangleAlert } from 'lucide-react'
+import { Loader, Plus, TriangleAlert } from 'lucide-react'
 import type { z } from 'zod'
 import { taskSchema } from '@/zod/task-schema'
 
@@ -436,7 +436,12 @@ function TaskFormPage() {
 
         <div className="flex justify-end gap-3">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Adding...' : 'Add Task'}
+            {isSubmitting ? (
+              <Loader className="animate-spin h-4 w-4" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
+            Add Task
           </Button>
         </div>
 
