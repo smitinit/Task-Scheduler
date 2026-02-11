@@ -1,11 +1,11 @@
-import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { format, isSameDay } from 'date-fns'
 import { useTransition } from 'react'
 import { Loader, Trash2 } from 'lucide-react'
 
 import { getTaskById } from '@/action/get-task-by-id'
 import { deleteTask } from '@/action/delete-task'
-import { toggleTaskCompletion } from '@/action/complete-task'
+import { markTaskCompletion } from '@/action/complete-task'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -26,7 +26,6 @@ export const Route = createFileRoute('/task/$taskId')({
 
 function TaskDetailPage() {
   const navigate = useNavigate()
-  const router = useRouter()
   const { task } = Route.useLoaderData()
   const [isPending, startTransition] = useTransition()
 
@@ -55,7 +54,7 @@ function TaskDetailPage() {
 
   function handleMarkComplete() {
     startTransition(async () => {
-      await toggleTaskCompletion({ data: { id: task!.id } })
+      await markTaskCompletion({ data: { id: task!.id } })
       navigate({ to: '/tasks' })
     })
   }
