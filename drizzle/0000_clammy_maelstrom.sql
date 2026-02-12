@@ -10,8 +10,6 @@ CREATE TABLE "tasks" (
 	"status" "task_status" DEFAULT 'scheduled' NOT NULL,
 	"is_focus_session" boolean DEFAULT false NOT NULL,
 	"completed_at" timestamp with time zone,
-	"notify_sent" boolean DEFAULT false NOT NULL,
-	"missed_notified" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -19,6 +17,7 @@ CREATE TABLE "tasks" (
 CREATE TABLE "notifications" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"todo_id" integer NOT NULL,
+	"type" text NOT NULL,
 	"scheduled_for" timestamp with time zone NOT NULL,
 	"sent_at" timestamp with time zone,
 	"status" text DEFAULT 'pending' NOT NULL,
@@ -38,13 +37,14 @@ CREATE TABLE "session" (
 	"expires_at" timestamp NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "user" (
+CREATE TABLE "users" (
 	"id" text PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
+	"name" text NOT NULL,
 	"hashed_password" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "user_email_unique" UNIQUE("email")
+	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
 ALTER TABLE "notifications" ADD CONSTRAINT "notifications_todo_id_tasks_id_fk" FOREIGN KEY ("todo_id") REFERENCES "public"."tasks"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "session" ADD CONSTRAINT "session_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;

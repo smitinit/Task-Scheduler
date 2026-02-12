@@ -17,7 +17,9 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TaskTaskIdRouteImport } from './routes/task.$taskId'
+import { Route as ApiTestPushRouteImport } from './routes/api/test-push'
 import { Route as ApiSyncTaskStatusRouteImport } from './routes/api/sync-task-status'
+import { Route as ApiRegisterFcmTokenRouteImport } from './routes/api/register-fcm-token'
 
 const TasksRoute = TasksRouteImport.update({
   id: '/tasks',
@@ -59,9 +61,19 @@ const TaskTaskIdRoute = TaskTaskIdRouteImport.update({
   path: '/task/$taskId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTestPushRoute = ApiTestPushRouteImport.update({
+  id: '/api/test-push',
+  path: '/api/test-push',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSyncTaskStatusRoute = ApiSyncTaskStatusRouteImport.update({
   id: '/api/sync-task-status',
   path: '/api/sync-task-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRegisterFcmTokenRoute = ApiRegisterFcmTokenRouteImport.update({
+  id: '/api/register-fcm-token',
+  path: '/api/register-fcm-token',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -73,7 +85,9 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/tasks': typeof TasksRoute
+  '/api/register-fcm-token': typeof ApiRegisterFcmTokenRoute
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
+  '/api/test-push': typeof ApiTestPushRoute
   '/task/$taskId': typeof TaskTaskIdRoute
 }
 export interface FileRoutesByTo {
@@ -84,7 +98,9 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/tasks': typeof TasksRoute
+  '/api/register-fcm-token': typeof ApiRegisterFcmTokenRoute
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
+  '/api/test-push': typeof ApiTestPushRoute
   '/task/$taskId': typeof TaskTaskIdRoute
 }
 export interface FileRoutesById {
@@ -96,7 +112,9 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/tasks': typeof TasksRoute
+  '/api/register-fcm-token': typeof ApiRegisterFcmTokenRoute
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
+  '/api/test-push': typeof ApiTestPushRoute
   '/task/$taskId': typeof TaskTaskIdRoute
 }
 export interface FileRouteTypes {
@@ -109,7 +127,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/tasks'
+    | '/api/register-fcm-token'
     | '/api/sync-task-status'
+    | '/api/test-push'
     | '/task/$taskId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -120,7 +140,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/tasks'
+    | '/api/register-fcm-token'
     | '/api/sync-task-status'
+    | '/api/test-push'
     | '/task/$taskId'
   id:
     | '__root__'
@@ -131,7 +153,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/tasks'
+    | '/api/register-fcm-token'
     | '/api/sync-task-status'
+    | '/api/test-push'
     | '/task/$taskId'
   fileRoutesById: FileRoutesById
 }
@@ -143,7 +167,9 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   TasksRoute: typeof TasksRoute
+  ApiRegisterFcmTokenRoute: typeof ApiRegisterFcmTokenRoute
   ApiSyncTaskStatusRoute: typeof ApiSyncTaskStatusRoute
+  ApiTestPushRoute: typeof ApiTestPushRoute
   TaskTaskIdRoute: typeof TaskTaskIdRoute
 }
 
@@ -205,11 +231,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TaskTaskIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/test-push': {
+      id: '/api/test-push'
+      path: '/api/test-push'
+      fullPath: '/api/test-push'
+      preLoaderRoute: typeof ApiTestPushRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/sync-task-status': {
       id: '/api/sync-task-status'
       path: '/api/sync-task-status'
       fullPath: '/api/sync-task-status'
       preLoaderRoute: typeof ApiSyncTaskStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/register-fcm-token': {
+      id: '/api/register-fcm-token'
+      path: '/api/register-fcm-token'
+      fullPath: '/api/register-fcm-token'
+      preLoaderRoute: typeof ApiRegisterFcmTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -223,7 +263,9 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   TasksRoute: TasksRoute,
+  ApiRegisterFcmTokenRoute: ApiRegisterFcmTokenRoute,
   ApiSyncTaskStatusRoute: ApiSyncTaskStatusRoute,
+  ApiTestPushRoute: ApiTestPushRoute,
   TaskTaskIdRoute: TaskTaskIdRoute,
 }
 export const routeTree = rootRouteImport

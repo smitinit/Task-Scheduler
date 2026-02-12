@@ -32,9 +32,6 @@ export const tasks = pgTable('tasks', {
 
   completedAt: timestamp('completed_at', { withTimezone: true }),
 
-  notifySent: boolean('notify_sent').notNull().default(false),
-  missedNotified: boolean('missed_notified').notNull().default(false),
-
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),

@@ -1,6 +1,6 @@
 {
-  "id": "5dd81e4a-1960-45a1-b204-b9914b303465",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "54ae36ea-ff10-414f-a73f-bf2a8ec158a5",
+  "prevId": "5dd81e4a-1960-45a1-b204-b9914b303465",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -105,8 +105,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "todo_id": {
-          "name": "todo_id",
+        "task_id": {
+          "name": "task_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -146,12 +146,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "notifications_todo_id_tasks_id_fk": {
-          "name": "notifications_todo_id_tasks_id_fk",
+        "notifications_task_id_tasks_id_fk": {
+          "name": "notifications_task_id_tasks_id_fk",
           "tableFrom": "notifications",
           "tableTo": "tasks",
           "columnsFrom": [
-            "todo_id"
+            "task_id"
           ],
           "columnsTo": [
             "id"
