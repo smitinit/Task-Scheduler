@@ -38,12 +38,27 @@ import { createFileRoute } from '@tanstack/react-router'
 import { and, eq, isNull, lt } from 'drizzle-orm'
 import { db } from '@/db'
 import { fcmTokens, notifications, tasks } from '@/db/schema'
-import { messaging } from '@/lib/firebase-admin'
 
 export const Route = createFileRoute('/api/sync-task-status')({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const { default: admin } = await import('firebase-admin')
+
+        if (!admin.apps.length) {
+          admin.initializeApp({
+            credential: admin.credential.cert({
+              projectId: process.env.FIREBASE_PROJECT_ID,
+              clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+              privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(
+                /\\n/g,
+                '\n',
+              ),
+            }),
+          })
+        }
+
+        const messaging = admin.messaging()
         const authHeader = request.headers.get('authorization')
         const expected = `Bearer ${process.env.CRON_SECRET}`
 
@@ -120,7 +135,7 @@ export const Route = createFileRoute('/api/sync-task-status')({
 
         /*
         ============================================
-        3️⃣ DELIVERY
+      3️⃣ DELIVERY
         ============================================
         */
 
