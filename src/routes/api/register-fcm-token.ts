@@ -11,7 +11,7 @@ export const Route = createFileRoute('/api/register-fcm-token')({
         if (!user) return new Response('Unauthorized', { status: 401 })
 
         const { token } = await request.json()
-        console.log(token)
+
         await db
           .insert(fcmTokens)
           .values({
