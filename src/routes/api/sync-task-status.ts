@@ -1,64 +1,37 @@
-// import { createFileRoute } from '@tanstack/react-router'
-// import { and, eq, isNull, lt } from 'drizzle-orm'
-// import { db } from '@/db'
-// import { tasks } from '@/db/schema'
-
-// export const Route = createFileRoute('/api/sync-task-status')({
-//   server: {
-//     handlers: {
-//       POST: async ({ request }) => {
-//         const authHeader = request.headers.get('authorization')
-
-//         const expected = `Bearer ${process.env.CRON_SECRET}`
-
-//         if (!authHeader || authHeader !== expected) {
-//           return new Response('Unauthorized', { status: 401 })
-//         }
-
-//         const now = new Date()
-
-//         await db
-//           .update(tasks)
-//           .set({ status: 'missed' })
-//           .where(
-//             and(
-//               lt(tasks.endTime, now),
-//               isNull(tasks.completedAt),
-//               eq(tasks.status, 'scheduled'),
-//             ),
-//           )
-
-//         return Response.json({ success: true })
-//       },
-//     },
-//   },
-// })
-
 import { createFileRoute } from '@tanstack/react-router'
 import { and, eq, isNull, lt } from 'drizzle-orm'
+import admin from 'firebase-admin'
 import { db } from '@/db'
 import { fcmTokens, notifications, tasks } from '@/db/schema'
+
+/*
+=================================================
+FIREBASE INIT (once per runtime)
+=================================================
+*/
+
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    }),
+  })
+}
+
+const messaging = admin.messaging()
+
+/*
+=================================================
+ROUTE
+=================================================
+*/
 
 export const Route = createFileRoute('/api/sync-task-status')({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const { default: admin } = await import('firebase-admin')
-
-        if (!admin.apps.length) {
-          admin.initializeApp({
-            credential: admin.credential.cert({
-              projectId: process.env.FIREBASE_PROJECT_ID,
-              clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-              privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(
-                /\\n/g,
-                '\n',
-              ),
-            }),
-          })
-        }
-
-        const messaging = admin.messaging()
         const authHeader = request.headers.get('authorization')
         const expected = `Bearer ${process.env.CRON_SECRET}`
 
@@ -69,9 +42,9 @@ export const Route = createFileRoute('/api/sync-task-status')({
         const now = new Date()
 
         /*
-        ============================================
-        1️⃣ REMINDER CREATION
-        ============================================
+        =================================================
+        1️⃣ REMINDER CREATION (IDEMPOTENT)
+        =================================================
         */
 
         const scheduledTasks = await db
@@ -85,31 +58,24 @@ export const Route = createFileRoute('/api/sync-task-status')({
           )
 
           if (now >= reminderTime && now < task.endTime) {
-            const existing = await db
-              .select()
-              .from(notifications)
-              .where(
-                and(
-                  eq(notifications.taskId, task.id),
-                  eq(notifications.type, 'reminder'),
-                ),
-              )
-
-            if (existing.length === 0) {
+            try {
               await db.insert(notifications).values({
                 taskId: task.id,
                 type: 'reminder',
                 scheduledFor: reminderTime,
                 status: 'pending',
               })
+            } catch {
+              // UNIQUE constraint prevents duplicate
+              // Ignore conflict
             }
           }
         }
 
         /*
-        ============================================
-        2️⃣ MISSED CREATION
-        ============================================
+        =================================================
+        2️⃣ MISSED CREATION (ATOMIC UPDATE)
+        =================================================
         */
 
         const missedTasks = await db
@@ -125,62 +91,108 @@ export const Route = createFileRoute('/api/sync-task-status')({
           .returning()
 
         for (const task of missedTasks) {
-          await db.insert(notifications).values({
-            taskId: task.id,
-            type: 'missed',
-            scheduledFor: task.endTime,
-            status: 'pending',
-          })
+          try {
+            await db.insert(notifications).values({
+              taskId: task.id,
+              type: 'missed',
+              scheduledFor: task.endTime,
+              status: 'pending',
+            })
+          } catch {
+            // Ignore duplicate insert
+          }
         }
 
         /*
-        ============================================
-      3️⃣ DELIVERY
-        ============================================
+        =================================================
+        3️⃣ CLAIM NOTIFICATIONS (CRITICAL FIX)
+        =================================================
         */
 
-        const pendingNotifications = await db
-          .select()
-          .from(notifications)
+        const claimed = await db
+          .update(notifications)
+          .set({ status: 'processing' })
           .where(eq(notifications.status, 'pending'))
+          .returning()
 
-        for (const notification of pendingNotifications) {
-          const task = await db
-            .select()
-            .from(tasks)
-            .where(eq(tasks.id, notification.taskId))
-            .then((res) => res[0])
+        /*
+        =================================================
+        4️⃣ DELIVERY
+        =================================================
+        */
 
-          const tokens = await db
-            .select()
-            .from(fcmTokens)
-            .where(eq(fcmTokens.userId, task.userId))
+        for (const notification of claimed) {
+          try {
+            const [task] = await db
+              .select()
+              .from(tasks)
+              .where(eq(tasks.id, notification.taskId))
 
-          const tokenList = tokens.map((t) => t.token)
-          if (!tokenList.length) continue
+            const tokens = await db
+              .select()
+              .from(fcmTokens)
+              .where(eq(fcmTokens.userId, task.userId))
 
-          const title =
-            notification.type === 'reminder'
-              ? 'Task Ending Soon'
-              : 'Task Missed'
+            const tokenList = tokens.map((t) => t.token)
 
-          const body =
-            notification.type === 'reminder'
-              ? `Your task "${task.title}" is about to end.`
-              : `You missed "${task.title}".`
+            if (!tokenList.length) {
+              await db
+                .update(notifications)
+                .set({ status: 'failed' })
+                .where(eq(notifications.id, notification.id))
+              continue
+            }
 
-          await messaging.sendEachForMulticast({
-            tokens: tokenList,
-            notification: { title, body },
-          })
+            const title =
+              notification.type === 'reminder'
+                ? 'Task Ending Soon'
+                : 'Task Missed'
 
-          await db
-            .update(notifications)
-            .set({
-              status: 'sent',
-              sentAt: new Date(),
+            const body =
+              notification.type === 'reminder'
+                ? `Your task "${task.title}" is about to end.`
+                : `You missed "${task.title}".`
+
+            const response = await messaging.sendEachForMulticast({
+              tokens: tokenList,
+              notification: { title, body },
             })
-            .where(eq(notifications.id, notification.id))
+
+            /*
+            =================================================
+            HANDLE PARTIAL FAILURES
+            =================================================
+            */
+
+            response.responses.forEach(async (res, idx) => {
+              if (!res.success) {
+                const errorCode = res.error?.code
+
+                // Remove invalid tokens
+                if (
+                  errorCode === 'messaging/registration-token-not-registered' ||
+                  errorCode === 'messaging/invalid-registration-token'
+                ) {
+                  await db
+                    .delete(fcmTokens)
+                    .where(eq(fcmTokens.token, tokenList[idx]))
+                }
+              }
+            })
+
+            await db
+              .update(notifications)
+              .set({
+                status: 'sent',
+                sentAt: new Date(),
+              })
+              .where(eq(notifications.id, notification.id))
+          } catch (err) {
+            await db
+              .update(notifications)
+              .set({ status: 'failed' })
+              .where(eq(notifications.id, notification.id))
+          }
         }
 
         return Response.json({ success: true })

@@ -13,3 +13,5 @@ count.txt
 todos.json
 
 src/routes/demo/
+# Local Netlify folder
+.netlify
