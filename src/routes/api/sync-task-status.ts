@@ -155,8 +155,12 @@ export const Route = createFileRoute('/api/sync-task-status')({
 
             const response = await messaging.sendEachForMulticast({
               tokens: tokenList,
-              notification: { title, body },
+              webpush: {
+                notification: { title, body, icon: '/icon-192.png' },
+              },
             })
+            console.log('Success:', response.successCount)
+            console.log('Failure:', response.failureCount)
 
             /*
             =================================================
