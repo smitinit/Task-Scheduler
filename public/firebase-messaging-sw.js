@@ -23,12 +23,3 @@ self.addEventListener('install', () => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim())
 })
-
-messaging.onBackgroundMessage(function (payload) {
-  const { title, body } = payload.notification
-
-  self.registration.showNotification(title, {
-    body,
-    icon: '/icon-192.png',
-  })
-})
