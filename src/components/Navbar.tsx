@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
 import LogoutButton from './LogoutButton'
+import { FCMInitializer } from './FCMInitilizer'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { useUser } from '@/hooks/useUser'
@@ -91,6 +92,7 @@ export default function Navbar() {
                 )
               })}
             {user && <LogoutButton />}
+            {user && <FCMInitializer />}
           </div>
         </div>
       )}

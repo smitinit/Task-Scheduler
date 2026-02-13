@@ -17,6 +17,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TaskTaskIdRouteImport } from './routes/task.$taskId'
+import { Route as ApiUnregisterFcmTokenRouteImport } from './routes/api/unregister-fcm-token'
 import { Route as ApiSyncTaskStatusRouteImport } from './routes/api/sync-task-status'
 import { Route as ApiRegisterFcmTokenRouteImport } from './routes/api/register-fcm-token'
 
@@ -60,6 +61,11 @@ const TaskTaskIdRoute = TaskTaskIdRouteImport.update({
   path: '/task/$taskId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiUnregisterFcmTokenRoute = ApiUnregisterFcmTokenRouteImport.update({
+  id: '/api/unregister-fcm-token',
+  path: '/api/unregister-fcm-token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiSyncTaskStatusRoute = ApiSyncTaskStatusRouteImport.update({
   id: '/api/sync-task-status',
   path: '/api/sync-task-status',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof TasksRoute
   '/api/register-fcm-token': typeof ApiRegisterFcmTokenRoute
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
+  '/api/unregister-fcm-token': typeof ApiUnregisterFcmTokenRoute
   '/task/$taskId': typeof TaskTaskIdRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/tasks': typeof TasksRoute
   '/api/register-fcm-token': typeof ApiRegisterFcmTokenRoute
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
+  '/api/unregister-fcm-token': typeof ApiUnregisterFcmTokenRoute
   '/task/$taskId': typeof TaskTaskIdRoute
 }
 export interface FileRoutesById {
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/tasks': typeof TasksRoute
   '/api/register-fcm-token': typeof ApiRegisterFcmTokenRoute
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
+  '/api/unregister-fcm-token': typeof ApiUnregisterFcmTokenRoute
   '/task/$taskId': typeof TaskTaskIdRoute
 }
 export interface FileRouteTypes {
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/api/register-fcm-token'
     | '/api/sync-task-status'
+    | '/api/unregister-fcm-token'
     | '/task/$taskId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/api/register-fcm-token'
     | '/api/sync-task-status'
+    | '/api/unregister-fcm-token'
     | '/task/$taskId'
   id:
     | '__root__'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/api/register-fcm-token'
     | '/api/sync-task-status'
+    | '/api/unregister-fcm-token'
     | '/task/$taskId'
   fileRoutesById: FileRoutesById
 }
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   TasksRoute: typeof TasksRoute
   ApiRegisterFcmTokenRoute: typeof ApiRegisterFcmTokenRoute
   ApiSyncTaskStatusRoute: typeof ApiSyncTaskStatusRoute
+  ApiUnregisterFcmTokenRoute: typeof ApiUnregisterFcmTokenRoute
   TaskTaskIdRoute: typeof TaskTaskIdRoute
 }
 
@@ -218,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TaskTaskIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/unregister-fcm-token': {
+      id: '/api/unregister-fcm-token'
+      path: '/api/unregister-fcm-token'
+      fullPath: '/api/unregister-fcm-token'
+      preLoaderRoute: typeof ApiUnregisterFcmTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/sync-task-status': {
       id: '/api/sync-task-status'
       path: '/api/sync-task-status'
@@ -245,6 +265,7 @@ const rootRouteChildren: RootRouteChildren = {
   TasksRoute: TasksRoute,
   ApiRegisterFcmTokenRoute: ApiRegisterFcmTokenRoute,
   ApiSyncTaskStatusRoute: ApiSyncTaskStatusRoute,
+  ApiUnregisterFcmTokenRoute: ApiUnregisterFcmTokenRoute,
   TaskTaskIdRoute: TaskTaskIdRoute,
 }
 export const routeTree = rootRouteImport
