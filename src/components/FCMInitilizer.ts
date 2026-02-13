@@ -1,20 +1,23 @@
 import { useEffect } from 'react'
-import { useRegisterFCM } from '@/hooks/useRegisterFcm'
+import { getFCMToken } from '@/lib/firebase-client'
 
 export function FCMInitializer() {
-  useRegisterFCM()
-
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/firebase-messaging-sw.js')
-        .then(() => {
-          console.log('Service Worker registered')
-        })
-        .catch((err) => {
-          console.error('SW registration failed:', err)
-        })
+    async function register() {
+      const permission = await Notification.requestPermission()
+      if (permission !== 'granted') return
+
+      const token = await getFCMToken()
+      if (!token) return
+
+      await fetch('/api/register-fcm-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      })
     }
+
+    register()
   }, [])
 
   return null

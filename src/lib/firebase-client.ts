@@ -12,15 +12,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 
 export async function getFCMToken() {
-  // Ensure we are in browser
   if (typeof window === 'undefined') return null
 
   const supported = await isSupported()
   if (!supported) return null
 
+  if (!('serviceWorker' in navigator)) return null
+
+  // 🔒 Explicit SW registration
+  const registration = await navigator.serviceWorker.register(
+    '/firebase-messaging-sw.js',
+  )
+
   const messaging = getMessaging(app)
 
-  return await getToken(messaging, {
+  const token = await getToken(messaging, {
     vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
+    serviceWorkerRegistration: registration,
   })
+
+  return token
 }

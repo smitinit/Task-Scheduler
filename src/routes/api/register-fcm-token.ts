@@ -18,7 +18,10 @@ export const Route = createFileRoute('/api/register-fcm-token')({
             userId: user.id,
             token,
           })
-          .onConflictDoNothing()
+          .onConflictDoUpdate({
+            target: fcmTokens.userId,
+            set: { token },
+          })
 
         return Response.json({ success: true })
       },
