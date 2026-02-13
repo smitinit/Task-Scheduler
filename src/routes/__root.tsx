@@ -12,7 +12,6 @@ import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/integrations/next-themes/theme-provider'
 import { GlobalErrorBoundary } from '@/components/GlobalErrorBoundary'
 import { GlobalNotFound } from '@/components/GlobalNotFound'
-import { FCMInitializer } from '@/components/FCMInitilizer'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -58,7 +57,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           enableSystem
           disableTransitionOnChange
         >
-          <FCMInitializer />
           <Navbar />
           <main className="mx-auto max-w-6xl p-4 bg-linear-to-b from-background to-muted/20">
             {children}

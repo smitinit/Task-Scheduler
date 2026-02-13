@@ -31,7 +31,7 @@ export default function Navbar() {
           <Link to="/" className="text-lg font-semibold tracking-tight">
             Task Scheduler
           </Link>
-
+          {user && <FCMInitializer />}
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-6">
             {user &&
@@ -92,7 +92,6 @@ export default function Navbar() {
                 )
               })}
             {user && <LogoutButton />}
-            {user && <FCMInitializer />}
           </div>
         </div>
       )}
