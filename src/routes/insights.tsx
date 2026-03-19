@@ -1,9 +1,22 @@
-import { createFileRoute } from '@tanstack/react-router'
+﻿import { createFileRoute } from '@tanstack/react-router'
+import { Insights } from '@/components/insights'
+import { getTasks } from '@/action/get-task'
+import { authMiddleware } from '@/middleware/auth'
+
+/* ── Route ── */
 
 export const Route = createFileRoute('/insights')({
-  component: RouteComponent,
+  loader: async () => {
+    const tasks = await getTasks()
+    return { tasks }
+  },
+  component: InsightsPage,
+  server: { middleware: [authMiddleware] },
 })
 
-function RouteComponent() {
-  return <div>Hello "/insights"!</div>
+/* ── Page ── */
+
+function InsightsPage() {
+  const { tasks } = Route.useLoaderData()
+  return <Insights tasks={tasks} />
 }

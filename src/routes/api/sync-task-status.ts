@@ -42,9 +42,9 @@ export const Route = createFileRoute('/api/sync-task-status')({
         const now = new Date()
 
         /*
-        =================================================
-        1️⃣ REMINDER CREATION (IDEMPOTENT)
-        =================================================
+          =================================================
+          1 REMINDER CREATION (IDEMPOTENT)
+          =================================================
         */
 
         const scheduledTasks = await db
@@ -73,9 +73,9 @@ export const Route = createFileRoute('/api/sync-task-status')({
         }
 
         /*
-        =================================================
-        2️⃣ MISSED CREATION (ATOMIC UPDATE)
-        =================================================
+          =================================================
+          2 MISSED CREATION (ATOMIC UPDATE)
+          =================================================
         */
 
         const missedTasks = await db
@@ -105,7 +105,7 @@ export const Route = createFileRoute('/api/sync-task-status')({
 
         /*
         =================================================
-        3️⃣ CLAIM NOTIFICATIONS (CRITICAL FIX)
+        3 CLAIM NOTIFICATIONS (CRITICAL FIX)
         =================================================
         */
 
@@ -117,7 +117,7 @@ export const Route = createFileRoute('/api/sync-task-status')({
 
         /*
         =================================================
-        4️⃣ DELIVERY
+        4 DELIVERY
         =================================================
         */
 

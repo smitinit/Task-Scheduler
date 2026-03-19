@@ -1,17 +1,19 @@
-import { getCookie, setResponseHeader } from '@tanstack/react-start/server'
-import { lucia } from '@/lib/auth'
+import { getRequestHeaders } from '@tanstack/react-start/server'
+import { auth } from '@/lib/auth-server'
 
 export async function getCurrentSession() {
-  const sessionId = getCookie(lucia.sessionCookieName)
+  try {
+    const headers = getRequestHeaders()
 
-  if (!sessionId) return { user: null, session: null }
+    const session = await auth.api.getSession({
+      headers: headers,
+    })
 
-  const result = await lucia.validateSession(sessionId)
-
-  if (result.session?.fresh) {
-    const sessionCookie = lucia.createSessionCookie(result.session.id)
-    setResponseHeader('Set-Cookie', sessionCookie.serialize())
+    return {
+      user: session?.user || null,
+      session: session?.session || null,
+    }
+  } catch (error) {
+    return { user: null, session: null }
   }
-
-  return result
 }

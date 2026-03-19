@@ -1,9 +1,18 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/dashboard')({
-  component: RouteComponent,
-})
+import { getTasks } from '@/action/get-task'
 
-function RouteComponent() {
-  return <div>Hello "/dashboard"!</div>
-}
+import { authMiddleware } from '@/middleware/auth'
+
+import DashboardPage from '@/components/pages/dashboard'
+
+/* ── Types ── */
+
+export const Route = createFileRoute('/dashboard')({
+  loader: async () => {
+    const tasks = await getTasks()
+    return { tasks }
+  },
+  component: DashboardPage,
+  server: { middleware: [authMiddleware] },
+})

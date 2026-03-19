@@ -1,107 +1,78 @@
-import { createServerFn } from '@tanstack/react-start'
-import { setResponseHeader } from '@tanstack/react-start/server'
-import { z } from 'zod'
-import { eq } from 'drizzle-orm'
-import { generateId } from 'lucia'
-import { db } from '@/db'
-import { users } from '@/db/schema'
-import { lucia } from '@/lib/auth'
-import { hashPassword, verifyPassword } from '@/lib/password'
-import { getCurrentSession } from '@/lib/sessions'
+import { client } from '@/lib/auth'
 
 /* ================================
-   LOGIN
+   LOGIN - Client-side only
 ================================ */
 
-export const login = createServerFn({
-  method: 'POST',
-})
-  .inputValidator(
-    z.object({
-      email: z.email(),
-      password: z.string(),
-    }),
-  )
-  .handler(async ({ data }) => {
-    const user = await db.query.users.findFirst({
-      where: eq(users.email, data.email),
+export const login = async ({
+  email,
+  password,
+}: {
+  email: string
+  password: string
+}) => {
+  try {
+    const result = await client.signIn.email({
+      email,
+      password,
     })
 
-    if (!user) {
-      throw new Error('Invalid credentials')
+    if (result.error) {
+      throw new Error(result.error.message || 'Invalid credentials')
     }
-
-    const valid = await verifyPassword(data.password, user.hashedPassword)
-
-    if (!valid) {
-      throw new Error('Invalid credentials')
-    }
-
-    const session = await lucia.createSession(user.id, {})
-    const sessionCookie = lucia.createSessionCookie(session.id)
-
-    setResponseHeader('Set-Cookie', sessionCookie.serialize())
 
     return { success: true }
-  })
-
-/* ================================
-   REGISTER
-================================ */
-
-export const register = createServerFn({
-  method: 'POST',
-})
-  .inputValidator(
-    z.object({
-      name: z.string(),
-      email: z.email(),
-      password: z.string().min(8),
-    }),
-  )
-  .handler(async ({ data }) => {
-    const existing = await db.query.users.findFirst({
-      where: eq(users.email, data.email),
-    })
-
-    if (existing) {
-      throw new Error('Email already registered')
-    }
-
-    const userId = generateId(15)
-    const hashed = await hashPassword(data.password)
-
-    await db.insert(users).values({
-      id: userId,
-      name: data.name,
-      email: data.email,
-      hashedPassword: hashed,
-    })
-
-    const session = await lucia.createSession(userId, {})
-    const sessionCookie = lucia.createSessionCookie(session.id)
-
-    setResponseHeader('Set-Cookie', sessionCookie.serialize())
-
-    return { success: true }
-  })
-
-/* ================================
-   LOGOUT
-================================ */
-
-export const logout = createServerFn({
-  method: 'POST',
-}).handler(async () => {
-  const { session } = await getCurrentSession()
-
-  if (session) {
-    await lucia.invalidateSession(session.id)
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Login failed')
   }
+}
 
-  const blankCookie = lucia.createBlankSessionCookie()
+/* ================================
+   REGISTER - Client-side only
+================================ */
 
-  setResponseHeader('Set-Cookie', blankCookie.serialize())
+export const register = async ({
+  name,
+  email,
+  password,
+}: {
+  name: string
+  email: string
+  password: string
+}) => {
+  try {
+    const result = await client.signUp.email({
+      email,
+      password,
+      name,
+    })
 
-  return { success: true }
-})
+    if (result.error) {
+      throw new Error(result.error.message || 'Registration failed')
+    }
+
+    return { success: true }
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : 'Registration failed',
+    )
+  }
+}
+
+/* ================================
+   LOGOUT - Client-side only
+================================ */
+
+export const logout = async () => {
+  try {
+    const result = await client.signOut()
+
+    if (result.error) {
+      throw new Error(result.error.message || 'Logout failed')
+    }
+
+    return { success: true }
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : 'Logout failed')
+  }
+}

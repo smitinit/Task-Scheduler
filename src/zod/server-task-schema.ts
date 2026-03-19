@@ -8,7 +8,14 @@ export const serverTaskSchema = z
 
     title: z.string().min(3).max(120),
 
-    description: z.string().max(2000).optional().or(z.literal('')),
+    // DB column is nullable — coerce null → undefined so downstream code
+    // always sees string | undefined, never null
+    description: z
+      .string()
+      .max(2000)
+      .nullable()
+      .optional()
+      .transform((v) => v ?? undefined),
 
     startTime: z.date(),
     endTime: z.date(),
@@ -39,7 +46,6 @@ export const serverTaskSchema = z
     (data) => {
       const duration =
         (data.endTime.getTime() - data.startTime.getTime()) / 1000 / 60
-
       return data.notifyBeforeMinutes < duration
     },
     {

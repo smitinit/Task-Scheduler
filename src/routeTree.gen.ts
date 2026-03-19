@@ -20,6 +20,8 @@ import { Route as TaskTaskIdRouteImport } from './routes/task.$taskId'
 import { Route as ApiUnregisterFcmTokenRouteImport } from './routes/api/unregister-fcm-token'
 import { Route as ApiSyncTaskStatusRouteImport } from './routes/api/sync-task-status'
 import { Route as ApiRegisterFcmTokenRouteImport } from './routes/api/register-fcm-token'
+import { Route as DemoApiTqTodosRouteImport } from './routes/demo/api.tq-todos'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const TasksRoute = TasksRouteImport.update({
   id: '/tasks',
@@ -76,6 +78,16 @@ const ApiRegisterFcmTokenRoute = ApiRegisterFcmTokenRouteImport.update({
   path: '/api/register-fcm-token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemoApiTqTodosRoute = DemoApiTqTodosRouteImport.update({
+  id: '/demo/api/tq-todos',
+  path: '/demo/api/tq-todos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +101,8 @@ export interface FileRoutesByFullPath {
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
   '/api/unregister-fcm-token': typeof ApiUnregisterFcmTokenRoute
   '/task/$taskId': typeof TaskTaskIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +116,8 @@ export interface FileRoutesByTo {
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
   '/api/unregister-fcm-token': typeof ApiUnregisterFcmTokenRoute
   '/task/$taskId': typeof TaskTaskIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +132,8 @@ export interface FileRoutesById {
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
   '/api/unregister-fcm-token': typeof ApiUnregisterFcmTokenRoute
   '/task/$taskId': typeof TaskTaskIdRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +149,8 @@ export interface FileRouteTypes {
     | '/api/sync-task-status'
     | '/api/unregister-fcm-token'
     | '/task/$taskId'
+    | '/api/auth/$'
+    | '/demo/api/tq-todos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +164,8 @@ export interface FileRouteTypes {
     | '/api/sync-task-status'
     | '/api/unregister-fcm-token'
     | '/task/$taskId'
+    | '/api/auth/$'
+    | '/demo/api/tq-todos'
   id:
     | '__root__'
     | '/'
@@ -157,6 +179,8 @@ export interface FileRouteTypes {
     | '/api/sync-task-status'
     | '/api/unregister-fcm-token'
     | '/task/$taskId'
+    | '/api/auth/$'
+    | '/demo/api/tq-todos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +195,8 @@ export interface RootRouteChildren {
   ApiSyncTaskStatusRoute: typeof ApiSyncTaskStatusRoute
   ApiUnregisterFcmTokenRoute: typeof ApiUnregisterFcmTokenRoute
   TaskTaskIdRoute: typeof TaskTaskIdRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,6 +278,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRegisterFcmTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/demo/api/tq-todos': {
+      id: '/demo/api/tq-todos'
+      path: '/demo/api/tq-todos'
+      fullPath: '/demo/api/tq-todos'
+      preLoaderRoute: typeof DemoApiTqTodosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -267,6 +307,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSyncTaskStatusRoute: ApiSyncTaskStatusRoute,
   ApiUnregisterFcmTokenRoute: ApiUnregisterFcmTokenRoute,
   TaskTaskIdRoute: TaskTaskIdRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
+  DemoApiTqTodosRoute: DemoApiTqTodosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

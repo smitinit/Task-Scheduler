@@ -1,17 +1,17 @@
 import { createMiddleware } from '@tanstack/react-start'
 import { getRequestHeaders } from '@tanstack/react-start/server'
 import { redirect } from '@tanstack/react-router'
-import { lucia } from '@/lib/auth'
+import { auth } from '@/lib/auth-server'
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
   const headers = getRequestHeaders()
-  const sessionId = lucia.readSessionCookie(headers.get('cookie') ?? '')
+  const session = await auth.api.getSession({
+    headers: headers,
+  })
 
-  if (!sessionId) throw redirect({ to: '/login' })
-
-  const { session } = await lucia.validateSession(sessionId)
-
-  if (!session) throw redirect({ to: '/login' })
+  if (!session) {
+    throw redirect({ to: '/login' })
+  }
 
   return next()
 })

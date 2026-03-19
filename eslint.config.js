@@ -2,4 +2,16 @@
 
 import { tanstackConfig } from '@tanstack/eslint-config'
 
-export default [...tanstackConfig]
+export default [
+  {
+    ignores: [
+      '.output/**',
+      'dist/**',
+      'node_modules/**',
+      'eslint.config.js',
+      'prettier.config.js',
+      'public/**',
+    ],
+  },
+  ...tanstackConfig,
+]

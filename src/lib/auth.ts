@@ -1,15 +1,7 @@
-import { Lucia } from 'lucia'
-import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle'
-import { db } from '@/db'
-import { sessions, users } from '@/db/schema'
+import { createAuthClient } from 'better-auth/react'
 
-const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users)
-
-export const lucia = new Lucia(adapter, {
-  sessionCookie: {
-    attributes: {
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-    },
-  },
+export const client = createAuthClient({
+  baseURL: process.env.VITE_BETTER_AUTH_URL || 'http://localhost:3000',
 })
+
+export const { signUp, signIn, signOut, useSession } = client

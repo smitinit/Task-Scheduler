@@ -19,7 +19,7 @@ export async function getFCMToken() {
 
   if (!('serviceWorker' in navigator)) return null
 
-  // 🔒 Explicit SW registration
+  // Explicit SW registration
   const registration = await navigator.serviceWorker.register(
     '/firebase-messaging-sw.js',
   )

@@ -8,10 +8,10 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import { useUser } from '@/hooks/useUser'
 
 const NAV_ITEMS = [
-  { label: 'Tasks', to: '/tasks' },
   { label: 'Dashboard', to: '/dashboard' },
-  { label: 'Calendar', to: '/calendar' },
+  { label: 'Tasks', to: '/tasks' },
   { label: 'Insights', to: '/insights' },
+  { label: 'Calendar', to: '/calendar' },
 ]
 
 export default function Navbar() {
