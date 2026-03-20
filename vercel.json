@@ -1,14 +1,8 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "framework": "other",
+  "outputDirectory": ".output",
+  "framework": "react-router",
   "env": {
     "NODE_VERSION": "22.x"
-  },
-  "functions": {
-    "api/[...].ts": {
-      "memory": 3008,
-      "maxDuration": 30
-    }
   }
 }
