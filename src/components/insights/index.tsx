@@ -15,6 +15,7 @@ export interface InsightsPageProps {
 }
 
 export function Insights({ tasks }: InsightsPageProps) {
+  // calculate overall stats
   const overallStats = useMemo(() => {
     const total = tasks.length
     const completed = tasks.filter((t) => t.status === 'completed').length

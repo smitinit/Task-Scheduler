@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Loader } from 'lucide-react'
 import { FcGoogle } from 'react-icons/fc'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'

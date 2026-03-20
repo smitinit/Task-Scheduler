@@ -22,17 +22,16 @@ import {
   Plus,
   TriangleAlert,
 } from 'lucide-react'
-import { formatTaskDuration } from '@/lib/task-utils'
 import type { z } from 'zod'
 
 import type { Event as RBCEvent, SlotInfo, View } from 'react-big-calendar'
+import { formatTaskDuration } from '@/lib/task-utils'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { taskSchema } from '@/zod/task-schema'
 import { createOrUpdateTodo } from '@/action/create-update-task'
 import { getTasksForForm } from '@/action/get-tasks-for-form'
 import { authMiddleware } from '@/middleware/auth'
 import { CalendarSkeleton } from '@/components/Skeletons'
-import { getCurrentSession } from '@/lib/sessions'
 
 import {
   Dialog,

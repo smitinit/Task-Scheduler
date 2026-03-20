@@ -27,8 +27,8 @@ export const TIME_OF_DAY_CONFIG: Record<
   TimeOfDay,
   { label: string; icon: React.ElementType; range: string }
 > = {
-  morning: { label: 'Morning', icon: Sunrise, range: '5 – 12am' },
-  afternoon: { label: 'Afternoon', icon: Sun, range: '12 – 5pm' },
-  evening: { label: 'Evening', icon: Moon, range: '5 – 9pm' },
+  morning: { label: 'Morning', icon: Sunrise, range: '5 - 12am' },
+  afternoon: { label: 'Afternoon', icon: Sun, range: '12 - 5pm' },
+  evening: { label: 'Evening', icon: Moon, range: '5 - 9pm' },
   night: { label: 'Night', icon: Moon, range: '9pm +' },
 }

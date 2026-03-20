@@ -16,6 +16,7 @@ export const getTasks = createServerFn({
 
   const parsed = result.map((task) => serverTaskSchema.parse(task))
 
+  // sort tasks by status (scheduled → missed → completed) and then by start time
   return parsed.sort((a, b) => {
     const order = {
       scheduled: 0,

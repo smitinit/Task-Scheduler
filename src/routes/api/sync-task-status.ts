@@ -43,11 +43,7 @@ export const Route = createFileRoute('/api/sync-task-status')({
 
         const now = new Date()
 
-        /*
-          =================================================
-          1 REMINDER CREATION (IDEMPOTENT)
-          =================================================
-        */
+        // Remainder creation, find task => still scheduled, and not completed
 
         const scheduledTasks = await db
           .select()
@@ -74,11 +70,7 @@ export const Route = createFileRoute('/api/sync-task-status')({
           }
         }
 
-        /*
-          =================================================
-          2 MISSED CREATION (ATOMIC UPDATE)
-          =================================================
-        */
+        // mark missed, find task => still scheduled, not completed, and endTime passed
 
         const missedTasks = await db
           .update(tasks)
@@ -105,11 +97,7 @@ export const Route = createFileRoute('/api/sync-task-status')({
           }
         }
 
-        /*
-        =================================================
-        3 CLAIM NOTIFICATIONS (CRITICAL FIX)
-        =================================================
-        */
+        // Claim pending notifications for processing
 
         const claimed = await db
           .update(notifications)
@@ -117,11 +105,7 @@ export const Route = createFileRoute('/api/sync-task-status')({
           .where(eq(notifications.status, 'pending'))
           .returning()
 
-        /*
-        =================================================
-        4 DELIVERY
-        =================================================
-        */
+        // map each notification to its task, get userId, find FCM tokens, and send notification
 
         for (const notification of claimed) {
           try {
@@ -162,11 +146,7 @@ export const Route = createFileRoute('/api/sync-task-status')({
               },
             })
 
-            /*
-            =================================================
-            HANDLE PARTIAL FAILURES
-            =================================================
-            */
+            // handle response, remove invalid tokens, and mark notification as sent or failed
 
             response.responses.forEach(async (res, idx) => {
               if (!res.success) {
@@ -199,6 +179,7 @@ export const Route = createFileRoute('/api/sync-task-status')({
           }
         }
 
+        // final success
         return Response.json({ success: true })
       },
     },

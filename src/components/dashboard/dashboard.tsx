@@ -36,16 +36,19 @@ export default function DashboardPage() {
   const [showAdd, setShowAdd] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
+  // update current time every second for live countdowns and status
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000)
     return () => clearInterval(id)
   }, [])
 
+  // filter tasks for today
   const todayTasks = useMemo(
     () => tasks.filter((t) => isToday(new Date(t.startTime))),
     [tasks],
   )
 
+  // get the currently active task (if any)
   const activeTask = useMemo(
     () =>
       todayTasks.find(
@@ -59,6 +62,7 @@ export default function DashboardPage() {
     [todayTasks, now],
   )
 
+  // get the next upcoming task (if any)
   const nextTask = useMemo(
     () =>
       todayTasks
@@ -70,6 +74,7 @@ export default function DashboardPage() {
     [todayTasks, now],
   )
 
+  // calculate stats for today
   const stats = useMemo(
     () => ({
       total: todayTasks.length,
@@ -80,11 +85,13 @@ export default function DashboardPage() {
     [todayTasks],
   )
 
+  // find missed tasks (started in the past but not completed)
   const missedTasks = useMemo(
     () => tasks.filter((t) => t.status === 'missed'),
     [tasks],
   )
 
+  // sort today's tasks by start time for the timeline
   const timelineItems = useMemo(
     () =>
       [...todayTasks].sort(
@@ -94,6 +101,7 @@ export default function DashboardPage() {
     [todayTasks],
   )
 
+  // handlers
   async function handleComplete(id: number) {
     await markTaskCompletion({ data: { id } })
     setTasks((prev) =>
