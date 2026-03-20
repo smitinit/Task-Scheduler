@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '@/db'
-import { tasks } from '@/db/schema'
+import { tasks } from '@/db/task'
 import { getCurrentSession } from '@/lib/sessions'
 
 export const deleteTask = createServerFn({

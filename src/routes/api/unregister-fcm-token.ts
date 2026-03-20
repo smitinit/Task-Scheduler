@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { and, eq } from 'drizzle-orm'
 import { db } from '@/db'
-import { fcmTokens } from '@/db/schema'
+import { fcmTokens } from '@/db/fcmTokens'
 import { getCurrentSession } from '@/lib/sessions'
 
 export const Route = createFileRoute('/api/unregister-fcm-token')({

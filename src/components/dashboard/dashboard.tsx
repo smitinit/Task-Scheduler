@@ -34,6 +34,7 @@ export default function DashboardPage() {
   const [tasks, setTasks] = useState<Array<Task>>(initialTasks)
   const [now, setNow] = useState(new Date())
   const [showAdd, setShowAdd] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000)
@@ -147,19 +148,23 @@ export default function DashboardPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={async () => setTasks(await getTasks())}
+            onClick={async () => {
+              setIsRefreshing(true)
+              await getTasks().then(setTasks)
+              setIsRefreshing(false)
+            }}
             className="gap-1.5"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <RefreshCw
+              className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`}
+            />
             Refresh
           </Button>
-          <Button
-            size="sm"
-            onClick={() => setShowAdd(true)}
-            className="gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Add Task
+          <Button asChild size="sm" className="gap-1.5">
+            <Link to="/add">
+              <Plus className="w-3.5 h-3.5" />
+              Add Task
+            </Link>
           </Button>
         </div>
       </div>
@@ -282,12 +287,23 @@ export default function DashboardPage() {
             </h2>
             <div className="space-y-2">
               <Button
+                asChild
+                variant="outline"
+                className="w-full justify-start gap-2 h-9 text-sm"
+              >
+                <Link to="/add">
+                  <Plus className="w-4 h-4" />
+                  Add Task
+                  <ArrowRight className="w-3.5 h-3.5 ml-auto" />
+                </Link>
+              </Button>
+              <Button
                 variant="outline"
                 className="w-full justify-start gap-2 h-9 text-sm"
                 onClick={() => setShowAdd(true)}
               >
                 <Plus className="w-4 h-4" />
-                Add Task
+                Quick Task
               </Button>
               <Button
                 variant="outline"

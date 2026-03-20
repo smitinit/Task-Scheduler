@@ -6,7 +6,7 @@ import type { ServerTaskInput } from '@/zod/server-task-schema'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { formatTaskDuration } from '@/routes'
+import { formatTaskDuration } from '@/lib/task-utils'
 import { markTaskCompletion } from '@/action/complete-task'
 import { deleteTask } from '@/action/delete-task'
 

@@ -3,7 +3,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getCurrentSession } from '@/lib/sessions'
 import { db } from '@/db'
-import { tasks } from '@/db/schema'
+import { tasks } from '@/db/task'
 
 export const markTaskCompletion = createServerFn({
   method: 'POST',

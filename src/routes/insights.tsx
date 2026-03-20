@@ -2,6 +2,7 @@
 import { Insights } from '@/components/insights'
 import { getTasks } from '@/action/get-task'
 import { authMiddleware } from '@/middleware/auth'
+import { InsightsSkeleton } from '@/components/Skeletons'
 
 /* ── Route ── */
 
@@ -11,6 +12,7 @@ export const Route = createFileRoute('/insights')({
     return { tasks }
   },
   component: InsightsPage,
+  pendingComponent: InsightsSkeleton,
   server: { middleware: [authMiddleware] },
 })
 

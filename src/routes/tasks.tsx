@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { getTasks } from '@/action/get-task'
+import { authMiddleware } from '@/middleware/auth'
 import { usePollOnVisible } from '@/hooks/usePollOnVisible'
 import { useTasksByStatus } from '@/hooks/useTasksByStatus'
 import TasksHeader from '@/components/Task/TasksHeader'
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/tasks')({
   },
   component: TasksPage,
   pendingComponent: TasksPageSkeleton,
+  server: { middleware: [authMiddleware] },
 })
 
 function TasksPage() {

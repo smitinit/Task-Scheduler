@@ -83,7 +83,7 @@ export function TimelineItem({
               className="opacity-0 group-hover:opacity-100 h-7 px-2 text-xs transition-opacity"
               onClick={() => onComplete(task.id)}
             >
-              <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Done
+              <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Mark as Complete
             </Button>
           )}
           {task.status === 'completed' && (

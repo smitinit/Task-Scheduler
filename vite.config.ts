@@ -13,6 +13,9 @@ const config = defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  ssr: {
+    external: ['node:stream', 'node:async_hooks', 'node:stream/web'],
+  },
   plugins: [
     devtools(),
     // this is the plugin that enables path aliases

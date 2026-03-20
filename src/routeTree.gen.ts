@@ -9,20 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TasksRouteImport } from './routes/tasks'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalendarRouteImport } from './routes/calendar'
+import { Route as AddRouteImport } from './routes/add'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TaskTaskIdRouteImport } from './routes/task.$taskId'
 import { Route as ApiUnregisterFcmTokenRouteImport } from './routes/api/unregister-fcm-token'
 import { Route as ApiSyncTaskStatusRouteImport } from './routes/api/sync-task-status'
 import { Route as ApiRegisterFcmTokenRouteImport } from './routes/api/register-fcm-token'
-import { Route as DemoApiTqTodosRouteImport } from './routes/demo/api.tq-todos'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TasksRoute = TasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
@@ -31,6 +38,11 @@ const TasksRoute = TasksRouteImport.update({
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -51,6 +63,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const CalendarRoute = CalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AddRoute = AddRouteImport.update({
+  id: '/add',
+  path: '/add',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -78,11 +95,6 @@ const ApiRegisterFcmTokenRoute = ApiRegisterFcmTokenRouteImport.update({
   path: '/api/register-fcm-token',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoApiTqTodosRoute = DemoApiTqTodosRouteImport.update({
-  id: '/demo/api/tq-todos',
-  path: '/demo/api/tq-todos',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -91,116 +103,137 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/add': typeof AddRoute
   '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/insights': typeof InsightsRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/tasks': typeof TasksRoute
+  '/terms': typeof TermsRoute
   '/api/register-fcm-token': typeof ApiRegisterFcmTokenRoute
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
   '/api/unregister-fcm-token': typeof ApiUnregisterFcmTokenRoute
   '/task/$taskId': typeof TaskTaskIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/add': typeof AddRoute
   '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/insights': typeof InsightsRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/tasks': typeof TasksRoute
+  '/terms': typeof TermsRoute
   '/api/register-fcm-token': typeof ApiRegisterFcmTokenRoute
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
   '/api/unregister-fcm-token': typeof ApiUnregisterFcmTokenRoute
   '/task/$taskId': typeof TaskTaskIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/add': typeof AddRoute
   '/calendar': typeof CalendarRoute
   '/dashboard': typeof DashboardRoute
   '/insights': typeof InsightsRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
   '/tasks': typeof TasksRoute
+  '/terms': typeof TermsRoute
   '/api/register-fcm-token': typeof ApiRegisterFcmTokenRoute
   '/api/sync-task-status': typeof ApiSyncTaskStatusRoute
   '/api/unregister-fcm-token': typeof ApiUnregisterFcmTokenRoute
   '/task/$taskId': typeof TaskTaskIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/add'
     | '/calendar'
     | '/dashboard'
     | '/insights'
     | '/login'
+    | '/privacy'
     | '/register'
     | '/tasks'
+    | '/terms'
     | '/api/register-fcm-token'
     | '/api/sync-task-status'
     | '/api/unregister-fcm-token'
     | '/task/$taskId'
     | '/api/auth/$'
-    | '/demo/api/tq-todos'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/add'
     | '/calendar'
     | '/dashboard'
     | '/insights'
     | '/login'
+    | '/privacy'
     | '/register'
     | '/tasks'
+    | '/terms'
     | '/api/register-fcm-token'
     | '/api/sync-task-status'
     | '/api/unregister-fcm-token'
     | '/task/$taskId'
     | '/api/auth/$'
-    | '/demo/api/tq-todos'
   id:
     | '__root__'
     | '/'
+    | '/add'
     | '/calendar'
     | '/dashboard'
     | '/insights'
     | '/login'
+    | '/privacy'
     | '/register'
     | '/tasks'
+    | '/terms'
     | '/api/register-fcm-token'
     | '/api/sync-task-status'
     | '/api/unregister-fcm-token'
     | '/task/$taskId'
     | '/api/auth/$'
-    | '/demo/api/tq-todos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AddRoute: typeof AddRoute
   CalendarRoute: typeof CalendarRoute
   DashboardRoute: typeof DashboardRoute
   InsightsRoute: typeof InsightsRoute
   LoginRoute: typeof LoginRoute
+  PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
   TasksRoute: typeof TasksRoute
+  TermsRoute: typeof TermsRoute
   ApiRegisterFcmTokenRoute: typeof ApiRegisterFcmTokenRoute
   ApiSyncTaskStatusRoute: typeof ApiSyncTaskStatusRoute
   ApiUnregisterFcmTokenRoute: typeof ApiUnregisterFcmTokenRoute
   TaskTaskIdRoute: typeof TaskTaskIdRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
-  DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tasks': {
       id: '/tasks'
       path: '/tasks'
@@ -213,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -241,6 +281,13 @@ declare module '@tanstack/react-router' {
       path: '/calendar'
       fullPath: '/calendar'
       preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/add': {
+      id: '/add'
+      path: '/add'
+      fullPath: '/add'
+      preLoaderRoute: typeof AddRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -278,13 +325,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiRegisterFcmTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/api/tq-todos': {
-      id: '/demo/api/tq-todos'
-      path: '/demo/api/tq-todos'
-      fullPath: '/demo/api/tq-todos'
-      preLoaderRoute: typeof DemoApiTqTodosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -297,18 +337,20 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AddRoute: AddRoute,
   CalendarRoute: CalendarRoute,
   DashboardRoute: DashboardRoute,
   InsightsRoute: InsightsRoute,
   LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
   TasksRoute: TasksRoute,
+  TermsRoute: TermsRoute,
   ApiRegisterFcmTokenRoute: ApiRegisterFcmTokenRoute,
   ApiSyncTaskStatusRoute: ApiSyncTaskStatusRoute,
   ApiUnregisterFcmTokenRoute: ApiUnregisterFcmTokenRoute,
   TaskTaskIdRoute: TaskTaskIdRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
-  DemoApiTqTodosRoute: DemoApiTqTodosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

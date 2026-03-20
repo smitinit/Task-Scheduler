@@ -2,7 +2,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { and, eq, isNull, lt } from 'drizzle-orm'
 import admin from 'firebase-admin'
 import { db } from '@/db'
-import { fcmTokens, notifications, tasks } from '@/db/schema'
+import { tasks } from '@/db/task'
+import { notifications } from '@/db/notification'
+import { fcmTokens } from '@/db/fcmTokens'
 
 /*
 =================================================
@@ -159,8 +161,6 @@ export const Route = createFileRoute('/api/sync-task-status')({
                 notification: { title, body, icon: '/icon-192.png' },
               },
             })
-            console.log('Success:', response.successCount)
-            console.log('Failure:', response.failureCount)
 
             /*
             =================================================

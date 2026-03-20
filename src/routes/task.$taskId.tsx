@@ -2,6 +2,8 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { format, isSameDay } from 'date-fns'
 import { useTransition } from 'react'
 import { Loader, Trash2 } from 'lucide-react'
+import { authMiddleware } from '@/middleware/auth'
+import { TaskDetailSkeleton } from '@/components/Skeletons'
 
 import { getTaskById } from '@/action/get-task-by-id'
 import { deleteTask } from '@/action/delete-task'
@@ -22,6 +24,8 @@ export const Route = createFileRoute('/task/$taskId')({
     return { task }
   },
   component: TaskDetailPage,
+  pendingComponent: TaskDetailSkeleton,
+  server: { middleware: [authMiddleware] },
 })
 
 function TaskDetailPage() {

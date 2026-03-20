@@ -84,7 +84,7 @@ export const HourDistributionChart: React.FC<HourDistributionChartProps> = ({
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={hourData}
-            margin={{ top: 8, right: 4, left: -18, bottom: 0 }}
+            margin={{ top: 24, right: 4, left: -18, bottom: 0 }}
           >
             <defs>
               {/* Scheduled: muted fill */}

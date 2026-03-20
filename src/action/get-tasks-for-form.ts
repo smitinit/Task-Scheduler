@@ -3,7 +3,7 @@ import { startOfToday } from 'date-fns'
 import { and, eq, gte } from 'drizzle-orm'
 import { getCurrentSession } from '@/lib/sessions'
 import { db } from '@/db'
-import { tasks } from '@/db/schema'
+import { tasks } from '@/db/task'
 
 export const getTasksForForm = createServerFn({
   method: 'GET',

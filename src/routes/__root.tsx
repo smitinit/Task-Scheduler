@@ -2,9 +2,12 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
+  useLocation,
 } from '@tanstack/react-router'
 
+import { useEffect } from 'react'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 
 import appCss from '../styles.css?url'
 
@@ -44,7 +47,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   notFoundComponent: GlobalNotFound,
 })
 
+function ScrollToTop() {
+  const location = useLocation()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
+
+  return null
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const location = useLocation()
+  const shouldShowFooter = location.pathname === '/'
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -57,10 +73,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           enableSystem
           disableTransitionOnChange
         >
+          <ScrollToTop />
           <Navbar />
           <main className="mx-auto max-w-6xl p-4 bg-linear-to-b from-background to-muted/20">
             {children}
           </main>
+          {shouldShowFooter && <Footer />}
         </ThemeProvider>
         <Scripts />
       </body>

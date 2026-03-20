@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 
 import {
@@ -22,7 +22,7 @@ import {
   Plus,
   TriangleAlert,
 } from 'lucide-react'
-import { formatTaskDuration } from './'
+import { formatTaskDuration } from '@/lib/task-utils'
 import type { z } from 'zod'
 
 import type { Event as RBCEvent, SlotInfo, View } from 'react-big-calendar'
@@ -31,6 +31,8 @@ import { taskSchema } from '@/zod/task-schema'
 import { createOrUpdateTodo } from '@/action/create-update-task'
 import { getTasksForForm } from '@/action/get-tasks-for-form'
 import { authMiddleware } from '@/middleware/auth'
+import { CalendarSkeleton } from '@/components/Skeletons'
+import { getCurrentSession } from '@/lib/sessions'
 
 import {
   Dialog,
@@ -64,6 +66,7 @@ export const Route = createFileRoute('/calendar')({
     return { tasks }
   },
   component: CalendarPage,
+  pendingComponent: CalendarSkeleton,
   server: {
     middleware: [authMiddleware],
   },
@@ -532,6 +535,8 @@ function CalendarPage() {
     setTasks((prev) => [...prev, task])
   }
 
+  const navigate = useNavigate()
+
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 space-y-4">
       {/* Header */}
@@ -542,12 +547,7 @@ function CalendarPage() {
             Click any slot to schedule a task
           </p>
         </div>
-        <Button
-          onClick={() => {
-            const start = roundToNext5Minutes(new Date())
-            setModal({ open: true, start, end: addMinutes(start, 25) })
-          }}
-        >
+        <Button onClick={() => navigate({ to: '/add' })}>
           <Plus className="h-4 w-4" />
           New Task
         </Button>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
 import LogoutButton from './LogoutButton'
 import { FCMInitializer } from './FCMInitilizer'
@@ -8,6 +8,7 @@ import { ThemeToggle } from '@/components/ThemeToggle'
 import { useUser } from '@/hooks/useUser'
 
 const NAV_ITEMS = [
+  { label: 'Add', to: '/add' },
   { label: 'Dashboard', to: '/dashboard' },
   { label: 'Tasks', to: '/tasks' },
   { label: 'Insights', to: '/insights' },
@@ -17,11 +18,6 @@ const NAV_ITEMS = [
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const { data: user, isLoading } = useUser()
-  const location = useLocation()
-
-  if (location.pathname === '/login' || location.pathname === '/register') {
-    return null
-  }
 
   return (
     <header className="w-full border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -55,7 +51,7 @@ export default function Navbar() {
 
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              {isLoading ? null : user && <LogoutButton />}
+              {isLoading ? null : user ? <LogoutButton /> : null}
             </div>
           </nav>
 
@@ -91,7 +87,7 @@ export default function Navbar() {
                   </Link>
                 )
               })}
-            {user && <LogoutButton />}
+            {user ? <LogoutButton /> : null}
           </div>
         </div>
       )}

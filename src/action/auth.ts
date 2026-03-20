@@ -1,7 +1,25 @@
 import { client } from '@/lib/auth'
 
 /* ================================
-   LOGIN - Client-side only
+   GOOGLE SIGN IN - Client-side only
+================================ */
+
+export const signInWithGoogle = () => {
+  // Don't await - let Better Auth handle the OAuth redirect naturally
+  client.signIn
+    .social({
+      provider: 'google',
+      callbackURL: `${window.location.origin}/dashboard`, // Redirect to dashboard after successful sign-in
+    })
+    .catch((error) => {
+      throw new Error(
+        error instanceof Error ? error.message : 'Google sign in failed',
+      )
+    })
+}
+
+/* ================================
+   LOGIN - Client-side only (Deprecated - use signInWithGoogle)
 ================================ */
 
 export const login = async ({

@@ -14,7 +14,7 @@ export default function TasksHeader() {
         </p>
       </div>
 
-      <Button onClick={() => navigate({ to: '/' })}>+ Add Task</Button>
+      <Button onClick={() => navigate({ to: '/add' })}>+ Add Task</Button>
     </div>
   )
 }

@@ -3,7 +3,7 @@ import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { getCurrentSession } from '@/lib/sessions'
 import { db } from '@/db'
-import { tasks } from '@/db/schema'
+import { tasks } from '@/db/task'
 
 export const getTaskById = createServerFn({
   method: 'GET',

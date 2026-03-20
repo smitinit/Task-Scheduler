@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { and, eq } from 'drizzle-orm'
 import { getCurrentSession } from '@/lib/sessions'
 import { db } from '@/db'
-import { tasks } from '@/db/schema'
+import { tasks } from '@/db/task'
 import { serverTaskSchema } from '@/zod/server-task-schema'
 
 export const createOrUpdateTodo = createServerFn({
