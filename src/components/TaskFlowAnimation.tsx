@@ -543,7 +543,7 @@ export default function TaskFlowAnimation() {
               letterSpacing: '0.01em',
             }}
           >
-            taskscheduler.io
+            {window.location.pathname}
           </span>
         </div>
         <div style={{ width: 62, flexShrink: 0 }} />
