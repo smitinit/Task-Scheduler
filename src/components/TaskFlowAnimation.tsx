@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from 'react'
 import {
   Bell,
   CalendarCheck,
@@ -15,7 +16,7 @@ import {
   X,
   XCircle,
 } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Phase =
@@ -47,7 +48,7 @@ interface ServerStep {
 // ─── Server steps ─────────────────────────────────────────────────────────────
 // Steps 0-2 run automatically, step 3 shows pre-notif, then we pause.
 // After user clicks complete, step 4 runs → completion notif.
-const SERVER_STEPS: ServerStep[] = [
+const SERVER_STEPS: Array<ServerStep> = [
   {
     id: 0,
     label: 'Persisting task',
@@ -999,7 +1000,6 @@ export default function TaskFlowAnimation() {
                 const displayIdx = activeStep
                 const step = SERVER_STEPS[displayIdx]
                 const isDone = doneSteps.includes(displayIdx)
-                const isActive = activeStep === displayIdx && !isDone
                 return (
                   <div style={{ textAlign: 'center', minHeight: 38 }}>
                     <p
@@ -1120,9 +1120,7 @@ function DBStack({ doneSteps, activeStep, totalSteps }: DBStackProps) {
   const rx = 56 // ellipse x-radius (width of disc)
   const ry = 14 // ellipse y-radius (depth illusion)
   const layerH = 24 // height of each cylinder segment
-  const totalH = totalSteps * layerH
   const baseY = H - 24 // bottom ellipse centre y
-  const topY = baseY - totalH // top ellipse centre y (all layers built)
 
   // Per-layer colours (index = step index, bottom→top = 0→4)
   // Layers are drawn bottom-first so layer 0 is the base
@@ -1136,7 +1134,7 @@ function DBStack({ doneSteps, activeStep, totalSteps }: DBStackProps) {
 
   // Build visible layers — layers appear bottom-up as steps complete/activate
   // Layer i is visible when activeStep >= i
-  const layers: JSX.Element[] = []
+  const layers: Array<React.JSX.Element> = []
 
   for (let i = 0; i < totalSteps; i++) {
     const isDone = doneSteps.includes(i)
@@ -1151,9 +1149,8 @@ function DBStack({ doneSteps, activeStep, totalSteps }: DBStackProps) {
     const segTop = segBottom - layerH
     const col = LAYER_COLORS[i % LAYER_COLORS.length]
 
-    const fillColor = isDone ? col.fill : isActive ? col.fill : '#e2e8f0'
-    const strokeColor = isDone ? col.stroke : isActive ? col.stroke : '#94a3b8'
-    const opacity = 1
+    const fillColor = isDone ? col.fill : '#e2e8f0'
+    const strokeColor = isDone ? col.stroke : '#94a3b8'
 
     layers.push(
       <g
@@ -1574,7 +1571,7 @@ function HeatmapGrid() {
   )
 }
 
-function PeakChart({ data }: { data: number[] }) {
+function PeakChart({ data }: { data: Array<number> }) {
   const W = 220,
     H = 52
   const max = Math.max(...data)

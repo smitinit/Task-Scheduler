@@ -1,9 +1,4 @@
-import {
-  addMinutes,
-  differenceInMinutes,
-  format,
-  intervalToDuration,
-} from 'date-fns'
+import { addMinutes, format, intervalToDuration } from 'date-fns'
 
 export function roundToNext5Minutes(date: Date) {
   const minutes = date.getMinutes()
