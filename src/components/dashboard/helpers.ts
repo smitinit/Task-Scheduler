@@ -1,4 +1,5 @@
 import { addMinutes, differenceInMinutes, format } from 'date-fns'
+import type { Task } from '@/types/task'
 
 export function toInputDateTime(date: Date): string {
   return format(date, "yyyy-MM-dd'T'HH:mm")
@@ -19,8 +20,6 @@ export function formatCountdown(ms: number): string {
   if (m > 0) return `${m}m ${s}s`
   return `${s}s`
 }
-
-export type Task = any
 
 export function taskProgress(task: Task, now: Date): number {
   const total = differenceInMinutes(

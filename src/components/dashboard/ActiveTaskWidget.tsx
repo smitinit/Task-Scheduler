@@ -1,9 +1,10 @@
 import { differenceInMinutes, format } from 'date-fns'
 import { CircleDashed } from 'lucide-react'
+import { memo } from 'react'
 import { taskProgress } from './helpers'
-import type { Task } from './helpers'
+import type { Task } from '@/types/task'
 
-export function ActiveTaskWidget({
+function ActiveTaskWidgetComponent({
   task,
   now,
 }: {
@@ -12,7 +13,7 @@ export function ActiveTaskWidget({
 }) {
   if (!task) {
     return (
-      <div className="rounded-lg border bg-muted/20 p-4 flex items-center gap-3 text-muted-foreground">
+      <div className="glass-widget border-none flex items-center gap-3 text-muted-foreground">
         <CircleDashed className="w-5 h-5" />
         <div>
           <p className="text-sm font-medium">No active task</p>
@@ -26,7 +27,7 @@ export function ActiveTaskWidget({
   const remaining = differenceInMinutes(new Date(task.endTime), now)
 
   return (
-    <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
+    <div className="glass rounded-2xl border-none bg-emerald-500/10 dark:bg-emerald-500/5 p-4">
       <div className="flex items-center gap-2 mb-2">
         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         <span className="text-xs font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
@@ -51,3 +52,17 @@ export function ActiveTaskWidget({
     </div>
   )
 }
+
+// Memoize to avoid re-renders when parent's `now` prop updates
+// Only re-render if task reference changes (id check) since UI updates per minute
+export const ActiveTaskWidget = memo(
+  ActiveTaskWidgetComponent,
+  (prev, next) => {
+    // Return true if props are equal (don't re-render), false if different (re-render)
+    const sameTask = prev.task?.id === next.task?.id
+    const sameMinute =
+      prev.now.getMinutes() === next.now.getMinutes() &&
+      prev.now.getHours() === next.now.getHours()
+    return sameTask && sameMinute
+  },
+)

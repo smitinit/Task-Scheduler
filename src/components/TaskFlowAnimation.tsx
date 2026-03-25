@@ -142,7 +142,7 @@ const METRIC_CARDS = [
   },
 ]
 
-const HEATMAP: number[][] = [
+const HEATMAP: Array<Array<number>> = [
   [0, 1, 2, 3, 2, 1, 3, 2],
   [1, 2, 1, 0, 3, 2, 1, 3],
   [2, 3, 3, 2, 1, 3, 2, 1],
@@ -159,7 +159,7 @@ const WEEKLY = [
   { week: 'W6', scheduled: 5, completed: 5, missed: 0 },
 ]
 
-const NAV_ITEMS: NavItem[] = ['Dashboard', 'Tasks', 'Insights', 'Calendar']
+const NAV_ITEMS: Array<NavItem> = ['Dashboard', 'Tasks', 'Insights', 'Calendar']
 
 function wait(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms))
@@ -307,9 +307,10 @@ export default function TaskFlowAnimation() {
   const [focusSession, setFocusSession] = useState(false)
   const [taskStatus, setTaskStatus] = useState<TaskStatus>('Scheduled')
   const [activeStep, setActiveStep] = useState(-1)
-  const [doneSteps, setDoneSteps] = useState<number[]>([])
+  const [doneSteps, setDoneSteps] = useState<Array<number>>([])
   const [taskDate, setTaskDate] = useState('')
   const [taskTime, setTaskTime] = useState('')
+  const [pathname, setPathname] = useState('/')
 
   // Two separate toasts: pre-reminder and completion
   const [preNotif, setPreNotif] = useState(false)
@@ -320,6 +321,13 @@ export default function TaskFlowAnimation() {
   const aborted = useRef(false)
 
   const activeNav = NAV_ACTIVE[phase]
+
+  // Set pathname on client mount for SSR compatibility
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setPathname(window.location.pathname)
+    }
+  }, [])
 
   // Promise that waits for user to click "Mark complete"
   function waitForComplete(): Promise<void> {
@@ -339,7 +347,7 @@ export default function TaskFlowAnimation() {
     if (!taskTitle.trim()) return
     aborted.current = false
     const go = (p: Phase) => {
-      if (!aborted.current) setPhase(p)
+      setPhase(p)
     }
 
     // Capture real date + time at submission moment
@@ -394,6 +402,7 @@ export default function TaskFlowAnimation() {
     // Pause — wait for user to click "Mark complete"
     go('waitingComplete')
     await waitForComplete()
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (aborted.current) return
 
     // Step 4: syncing UI state
@@ -446,7 +455,7 @@ export default function TaskFlowAnimation() {
   const showForm = phase === 'formVisible' || phase === 'taskCreating'
   const formOpacity = phase === 'taskCreating' ? 0 : 1
 
-  const taskPhases: Phase[] = [
+  const taskPhases: Array<Phase> = [
     'taskAndServer',
     'waitingComplete',
     'completing',
@@ -457,7 +466,7 @@ export default function TaskFlowAnimation() {
   // Task stays centre throughout (server is independently positioned left)
   const taskX = 0
 
-  const serverPhases: Phase[] = [
+  const serverPhases: Array<Phase> = [
     'taskAndServer',
     'waitingComplete',
     'completing',
@@ -468,11 +477,11 @@ export default function TaskFlowAnimation() {
   ]
   const showServer = serverPhases.includes(phase)
   const serverCentered = (
-    ['serverSlideCenter', 'notifShow', 'serverFadeOut'] as Phase[]
+    ['serverSlideCenter', 'notifShow', 'serverFadeOut'] as Array<Phase>
   ).includes(phase)
   const serverOpacity = phase === 'serverFadeOut' ? 0 : showServer ? 1 : 0
 
-  const showAnalysis = (['analysisShow', 'done'] as Phase[]).includes(phase)
+  const showAnalysis = phase === 'analysisShow' || phase === 'done'
 
   return (
     <div
@@ -544,7 +553,7 @@ export default function TaskFlowAnimation() {
               letterSpacing: '0.01em',
             }}
           >
-            {window.location.pathname}
+            {pathname}
           </span>
         </div>
         <div style={{ width: 62, flexShrink: 0 }} />
@@ -783,8 +792,8 @@ export default function TaskFlowAnimation() {
             style={{
               position: 'absolute',
               inset: 0,
-              opacity: showAnalysis ? 1 : 0,
-              transform: `translateY(${showAnalysis ? 0 : 18}px)`,
+              opacity: 1,
+              transform: 'translateY(0)',
               transition: 'opacity 0.75s ease, transform 0.75s ease',
               overflowY: 'auto',
               scrollbarWidth: 'none',
@@ -1105,7 +1114,7 @@ export default function TaskFlowAnimation() {
 
 // ─── DB Stack animation ───────────────────────────────────────────────────────
 interface DBStackProps {
-  doneSteps: number[]
+  doneSteps: Array<number>
   activeStep: number
   totalSteps: number
 }

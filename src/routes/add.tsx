@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,24 +19,31 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { getTasksForForm } from '@/action/get-tasks-for-form'
-import { TaskFormSkeleton } from '@/components/Skeletons/TaskFormSkeleton'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 import {
   formatTaskDuration,
   roundToNext5Minutes,
   toInputDateTime,
 } from '@/lib/task-utils'
-import { authMiddleware } from '@/middleware/auth'
+import { checkRouteAuth } from '@/lib/auth-check'
 
 type TaskFormValues = z.infer<typeof taskSchema>
 
 export const Route = createFileRoute('/add')({
+  beforeLoad: async () => {
+    // Auth check - redirect to login if not authenticated
+    const user = await checkRouteAuth()
+    if (!user) {
+      throw redirect({ to: '/login' })
+    }
+  },
   loader: async () => {
-    const tasks = await getTasksForForm()
+    // Load form data in parallel - prepared for future parallelization
+    const [tasks] = await Promise.all([getTasksForForm()])
     return { tasks }
   },
   component: AddTaskPage,
-  pendingComponent: TaskFormSkeleton,
-  server: { middleware: [authMiddleware] },
+  pendingComponent: LoadingSpinner,
 })
 
 function findOverlappingTasks(
@@ -163,8 +170,17 @@ function AddTaskPage() {
   }, [durationMinutes, notifyValue, setValue])
 
   return (
-    <div className="max-w-2xl mx-auto py-12 space-y-6">
-      <h1 className="text-2xl font-semibold">Create Task</h1>
+    <div className="max-w-2xl mx-auto py-8 px-4 space-y-6">
+      {/* Page header */}
+      <div>
+        <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
+          New Entry
+        </p>
+        <h1 className="text-2xl font-bold mt-0.5">Create Task</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          Schedule and organize your work
+        </p>
+      </div>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Tabs defaultValue="quick">

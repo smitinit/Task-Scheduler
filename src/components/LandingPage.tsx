@@ -116,7 +116,7 @@ export default function LandingPage() {
         </div>
 
         {/* Hero Animation */}
-        <div className="mt-12 rounded-lg border bg-card shadow-lg overflow-hidden">
+        <div className="glass-card mt-12 border overflow-hidden">
           <div className="aspect-video">
             <TaskFlowAnimation />
           </div>
@@ -134,7 +134,7 @@ export default function LandingPage() {
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-lg border bg-card p-6 md:p-8">
+            <div className="glass-card border">
               <h3 className="text-xl font-semibold mb-3">The Problem</h3>
               <p className="text-muted-foreground leading-relaxed">
                 Most people struggle with task management. They lose track of
@@ -145,7 +145,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="rounded-lg border bg-card p-6 md:p-8">
+            <div className="glass-card border">
               <h3 className="text-xl font-semibold mb-3">Our Solution</h3>
               <p className="text-muted-foreground leading-relaxed">
                 Task Scheduler combines intelligent scheduling, real-time
@@ -156,7 +156,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="rounded-lg border bg-card p-6 md:p-8">
+            <div className="glass-card border">
               <h3 className="text-xl font-semibold mb-3">Our Mission</h3>
               <p className="text-muted-foreground leading-relaxed">
                 To empower professionals and teams to reclaim control of their

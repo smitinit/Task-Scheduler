@@ -3,7 +3,8 @@ import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '@/db'
 import { tasks } from '@/db/task'
-import { getCurrentSession } from '@/lib/sessions'
+import { getCurrentSession } from '@/lib/sessions.server'
+import { errors } from '@/lib/errors'
 
 export const deleteTask = createServerFn({
   method: 'POST',
@@ -12,7 +13,7 @@ export const deleteTask = createServerFn({
   .handler(async ({ data }) => {
     const { user } = await getCurrentSession()
 
-    if (!user) throw new Error('Unauthorized')
+    if (!user) throw errors.unauthorized()
 
     await db
       .delete(tasks)

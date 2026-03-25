@@ -1,35 +1,47 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { useState } from 'react'
 import { getTasks } from '@/action/get-task'
-import { authMiddleware } from '@/middleware/auth'
+import { checkRouteAuth } from '@/lib/auth-check'
 import { usePollOnVisible } from '@/hooks/usePollOnVisible'
 import { useTasksByStatus } from '@/hooks/useTasksByStatus'
 import TasksHeader from '@/components/Task/TasksHeader'
 import TaskStats from '@/components/Task/TaskStats'
 import TaskSection from '@/components/Task/TaskSection'
-import { TasksPageSkeleton } from '@/components/Skeletons/TasksSkeleton'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 export const Route = createFileRoute('/tasks')({
+  beforeLoad: async () => {
+    // Auth check - redirect to login if not authenticated
+    const user = await checkRouteAuth()
+    if (!user) {
+      throw redirect({ to: '/login' })
+    }
+  },
   loader: async () => {
-    const tasks = await getTasks()
+    // Load tasks in parallel - prepared for future parallelization
+    const [tasks] = await Promise.all([getTasks()])
     return { tasks }
   },
   component: TasksPage,
-  pendingComponent: TasksPageSkeleton,
-  server: { middleware: [authMiddleware] },
+  pendingComponent: LoadingSpinner,
 })
 
 function TasksPage() {
-  const { tasks } = Route.useLoaderData()
+  const { tasks: initialTasks } = Route.useLoaderData()
+  const [tasks, setTasks] = useState(initialTasks)
 
-  // Poll data when page is visible
-  usePollOnVisible()
+  // Poll data when page is visible - refresh tasks without invalidating all loaders
+  usePollOnVisible(async () => {
+    const refreshedTasks = await getTasks()
+    setTasks(refreshedTasks)
+  })
 
   // Categorize tasks by status
   const { today, upcoming, missed, completed, totalFocus } =
     useTasksByStatus(tasks)
 
   return (
-    <div className="max-w-6xl mx-auto py-10 space-y-6">
+    <div className="max-w-6xl mx-auto py-8 px-4 space-y-6">
       {/* Header with title and date */}
       <TasksHeader />
 
@@ -40,9 +52,6 @@ function TasksPage() {
         completed={completed.length}
         focus={totalFocus}
       />
-
-      {/* Divider */}
-      <div className="h-px bg-border" />
 
       {/* Task sections by status */}
       <TaskSection title="Today" tasks={today} />

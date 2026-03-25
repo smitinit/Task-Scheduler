@@ -1,4 +1,5 @@
 import { differenceInMinutes, format, isWithinInterval } from 'date-fns'
+import { memo } from 'react'
 import {
   Activity,
   AlarmClock,
@@ -7,10 +8,10 @@ import {
   XCircle,
 } from 'lucide-react'
 import { STATUS_CONFIG, taskProgress } from './helpers'
-import type { Task } from './helpers'
+import type { Task } from '@/types/task'
 import { Button } from '@/components/ui/button'
 
-export function TimelineItem({
+function TimelineItemComponent({
   task,
   now,
   onComplete,
@@ -106,3 +107,15 @@ export function TimelineItem({
     </div>
   )
 }
+
+// Memoize to avoid re-renders when parent's `now` prop updates
+// Only re-render if task changes or when minute changes (affects "Active", "Imminent" status)
+export const TimelineItem = memo(TimelineItemComponent, (prev, next) => {
+  // Return true if equal (don't re-render), false if different (re-render)
+  const sameTask = prev.task.id === next.task.id
+  const sameStatus = prev.task.status === next.task.status
+  const sameMinute =
+    prev.now.getMinutes() === next.now.getMinutes() &&
+    prev.now.getHours() === next.now.getHours()
+  return sameTask && sameStatus && sameMinute
+})

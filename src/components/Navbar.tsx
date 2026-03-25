@@ -20,7 +20,7 @@ export default function Navbar() {
   const { data: user, isLoading } = useUser()
 
   return (
-    <header className="w-full border-b bg-background/80 backdrop-blur supports-backdrop-filter:bg-background/60">
+    <header className="glass-navbar w-full">
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex h-14 items-center justify-between">
           {/* Logo / Title */}

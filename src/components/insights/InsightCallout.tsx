@@ -10,10 +10,10 @@ export const InsightCallout: React.FC<InsightCalloutProps> = ({
 }) => {
   const styles: Record<InsightEntry['type'], string> = {
     warning:
-      'border-amber-500/25 bg-amber-500/5 text-amber-700 dark:text-amber-400',
+      'bg-amber-500/10 dark:bg-amber-500/5 text-amber-700 dark:text-amber-400',
     success:
-      'border-emerald-500/25 bg-emerald-500/5 text-emerald-700 dark:text-emerald-400',
-    info: 'border-primary/20 bg-primary/5 text-primary',
+      'bg-emerald-500/10 dark:bg-emerald-500/5 text-emerald-700 dark:text-emerald-400',
+    info: 'bg-primary/10 dark:bg-primary/5 text-primary',
   }
   const icons: Record<InsightEntry['type'], React.ElementType> = {
     warning: AlertTriangle,
@@ -24,7 +24,7 @@ export const InsightCallout: React.FC<InsightCalloutProps> = ({
 
   return (
     <div
-      className={`rounded-lg border px-3 py-2.5 flex items-start gap-2.5 text-[13px] ${styles[type]}`}
+      className={`glass border-none rounded-xl px-3 py-2.5 flex items-start gap-2.5 text-[13px] ${styles[type]}`}
     >
       <Icon className="w-3.5 h-3.5 mt-0.5 shrink-0" />
       <span className="leading-snug">{message}</span>

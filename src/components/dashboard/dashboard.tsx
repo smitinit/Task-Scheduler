@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLoaderData } from '@tanstack/react-router'
 import {
   addMinutes,
@@ -17,7 +17,7 @@ import {
   XCircle,
   Zap,
 } from 'lucide-react'
-import type { Task } from '@/components/dashboard/helpers'
+import type { Task } from '@/types/task'
 import { formatCountdown, roundToNext5 } from '@/components/dashboard/helpers'
 import { getTasks } from '@/action/get-task'
 import { markTaskCompletion } from '@/action/complete-task'
@@ -31,25 +31,42 @@ import { NextTaskWidget } from '@/components/dashboard/NextTaskWidget'
 
 export default function DashboardPage() {
   const { tasks: initialTasks } = useLoaderData({ from: '/dashboard' })
-  const [tasks, setTasks] = useState<Array<Task>>(initialTasks)
+  const [tasks, setTasks] = useState<Array<Task>>(initialTasks as Array<Task>)
   const [now, setNow] = useState(new Date())
   const [showAdd, setShowAdd] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  // update current time every second for live countdowns and status
+  // Use a ref for current time to avoid unnecessary re-renders
+  // Only update state at strategic points or when tasks change
+  const nowRef = useRef(new Date())
+
+  // Update time reference every second, but don't trigger re-renders
+  // Only re-render when minute changes or active task might change
   useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 1000)
+    const id = setInterval(() => {
+      const newNow = new Date()
+      const oldMinute = nowRef.current.getMinutes()
+      const newMinute = newNow.getMinutes()
+
+      // Only update state when minute changes (less frequent re-renders)
+      if (oldMinute !== newMinute) {
+        setNow(newNow)
+      }
+
+      nowRef.current = newNow
+    }, 1000)
+
     return () => clearInterval(id)
   }, [])
 
   // filter tasks for today
-  const todayTasks = useMemo(
+  const todayTasks = useMemo<Array<Task>>(
     () => tasks.filter((t) => isToday(new Date(t.startTime))),
     [tasks],
   )
 
   // get the currently active task (if any)
-  const activeTask = useMemo(
+  const activeTask = useMemo<Task | null>(
     () =>
       todayTasks.find(
         (t) =>
@@ -63,7 +80,7 @@ export default function DashboardPage() {
   )
 
   // get the next upcoming task (if any)
-  const nextTask = useMemo(
+  const nextTask = useMemo<Task | null>(
     () =>
       todayTasks
         .filter((t) => t.status === 'scheduled' && new Date(t.startTime) > now)
@@ -86,13 +103,13 @@ export default function DashboardPage() {
   )
 
   // find missed tasks (started in the past but not completed)
-  const missedTasks = useMemo(
+  const missedTasks = useMemo<Array<Task>>(
     () => tasks.filter((t) => t.status === 'missed'),
     [tasks],
   )
 
   // sort today's tasks by start time for the timeline
-  const timelineItems = useMemo(
+  const timelineItems = useMemo<Array<Task>>(
     () =>
       [...todayTasks].sort(
         (a, b) =>
@@ -104,13 +121,8 @@ export default function DashboardPage() {
   // handlers
   async function handleComplete(id: number) {
     await markTaskCompletion({ data: { id } })
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === id
-          ? { ...t, status: 'completed' as const, completedAt: new Date() }
-          : t,
-      ),
-    )
+    // Refetch tasks to get updated state instead of manual mutation
+    setTasks((await getTasks()) as Array<Task>)
   }
 
   async function handleReschedule(task: Task) {
@@ -130,7 +142,7 @@ export default function DashboardPage() {
         isFocusSession: task.isFocusSession,
       },
     })
-    setTasks(await getTasks())
+    setTasks((await getTasks()) as Array<Task>)
   }
 
   return (
@@ -158,7 +170,9 @@ export default function DashboardPage() {
             size="sm"
             onClick={async () => {
               setIsRefreshing(true)
-              await getTasks().then(setTasks)
+              await getTasks().then((newTasks) =>
+                setTasks(newTasks as Array<Task>),
+              )
               setIsRefreshing(false)
             }}
             className="gap-1.5"
@@ -328,7 +342,7 @@ export default function DashboardPage() {
                       isFocusSession: true,
                     },
                   })
-                  setTasks(await getTasks())
+                  setTasks((await getTasks()) as Array<Task>)
                 }}
               >
                 <Flame className="w-4 h-4 text-indigo-500" />
@@ -364,7 +378,7 @@ export default function DashboardPage() {
       <QuickAddModal
         open={showAdd}
         onClose={() => setShowAdd(false)}
-        onSuccess={async () => setTasks(await getTasks())}
+        onSuccess={async () => setTasks((await getTasks()) as Array<Task>)}
       />
     </div>
   )

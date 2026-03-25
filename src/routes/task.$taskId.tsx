@@ -1,9 +1,9 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { format, isSameDay } from 'date-fns'
 import { useTransition } from 'react'
 import { Loader, Trash2 } from 'lucide-react'
-import { authMiddleware } from '@/middleware/auth'
-import { TaskDetailSkeleton } from '@/components/Skeletons'
+import { checkRouteAuth } from '@/lib/auth-check'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 import { getTaskById } from '@/action/get-task-by-id'
 import { deleteTask } from '@/action/delete-task'
@@ -13,6 +13,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
 export const Route = createFileRoute('/task/$taskId')({
+  beforeLoad: async () => {
+    // Auth check - redirect to login if not authenticated
+    const user = await checkRouteAuth()
+    if (!user) {
+      throw redirect({ to: '/login' })
+    }
+  },
   loader: async ({ params }) => {
     const id = Number(params.taskId)
 
@@ -24,8 +31,7 @@ export const Route = createFileRoute('/task/$taskId')({
     return { task }
   },
   component: TaskDetailPage,
-  pendingComponent: TaskDetailSkeleton,
-  server: { middleware: [authMiddleware] },
+  pendingComponent: LoadingSpinner,
 })
 
 function TaskDetailPage() {
@@ -35,9 +41,12 @@ function TaskDetailPage() {
 
   if (!task) {
     return (
-      <div className="max-w-xl mx-auto py-20 text-center space-y-4">
-        <h1 className="text-2xl font-semibold">Task not found</h1>
-        <Button onClick={() => navigate({ to: '/tasks' })}>
+      <div className="max-w-xl mx-auto py-20 px-4 text-center space-y-4">
+        <h1 className="text-2xl font-bold">Task not found</h1>
+        <p className="text-sm text-muted-foreground">
+          This task doesn't exist or has been deleted.
+        </p>
+        <Button size="sm" onClick={() => navigate({ to: '/tasks' })}>
           Back to Tasks
         </Button>
       </div>
@@ -64,14 +73,20 @@ function TaskDetailPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-12 space-y-6">
+    <div className="max-w-2xl mx-auto py-8 px-4 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{task.title}</h1>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
+            Task Details
+          </p>
+          <h1 className="text-2xl font-bold mt-0.5">{task.title}</h1>
+        </div>
 
         <div className="flex gap-2">
           {!isCompleted && (
             <Button
+              size="sm"
               variant="secondary"
               onClick={handleMarkComplete}
               disabled={isPending}
@@ -85,6 +100,7 @@ function TaskDetailPage() {
           )}
 
           <Button
+            size="sm"
             variant="destructive"
             onClick={handleDelete}
             disabled={isPending}

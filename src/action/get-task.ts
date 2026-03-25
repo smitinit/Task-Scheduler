@@ -1,16 +1,17 @@
 import { createServerFn } from '@tanstack/react-start'
 import { eq } from 'drizzle-orm'
-import { getCurrentSession } from '@/lib/sessions'
+import { getCurrentSession } from '@/lib/sessions.server'
 import { db } from '@/db'
 import { tasks } from '@/db/task'
 import { serverTaskSchema } from '@/zod/server-task-schema'
+import { errors } from '@/lib/errors'
 
 export const getTasks = createServerFn({
   method: 'GET',
 }).handler(async () => {
   const { user } = await getCurrentSession()
 
-  if (!user) throw new Error('Unauthorized')
+  if (!user) throw errors.unauthorized()
 
   const result = await db.select().from(tasks).where(eq(tasks.userId, user.id))
 

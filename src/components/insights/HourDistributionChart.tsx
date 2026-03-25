@@ -56,22 +56,22 @@ export const HourDistributionChart: React.FC<HourDistributionChartProps> = ({
     scheduled: {
       label: 'Scheduled',
       theme: {
-        light: '#b4b0ae',
-        dark: '#6b6763',
+        light: '#d1d5db',
+        dark: '#6b7280',
       },
     },
     completed: {
       label: 'Completed',
       theme: {
-        light: '#2563eb',
-        dark: '#3b82f6',
+        light: '#f59e0b',
+        dark: '#fbbf24',
       },
     },
   }
 
   const colors = {
-    scheduled: isDark ? '#6b6763' : '#b4b0ae',
-    completed: isDark ? '#3b82f6' : '#2563eb',
+    scheduled: isDark ? '#6b7280' : '#d1d5db',
+    completed: isDark ? '#fbbf24' : '#f59e0b',
   }
 
   return (

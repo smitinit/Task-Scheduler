@@ -1,9 +1,10 @@
 import { and, eq } from 'drizzle-orm'
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCurrentSession } from '@/lib/sessions'
+import { getCurrentSession } from '@/lib/sessions.server'
 import { db } from '@/db'
 import { tasks } from '@/db/task'
+import { errors } from '@/lib/errors'
 
 export const markTaskCompletion = createServerFn({
   method: 'POST',
@@ -12,7 +13,7 @@ export const markTaskCompletion = createServerFn({
   .handler(async ({ data }) => {
     const { user } = await getCurrentSession()
 
-    if (!user) throw new Error('Unauthorized')
+    if (!user) throw errors.unauthorized()
 
     await db
       .update(tasks)

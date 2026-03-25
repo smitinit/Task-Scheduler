@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 import { Clock, Timer } from 'lucide-react'
 import { formatCountdown } from './helpers'
-import type { Task } from './helpers'
+import type { Task } from '@/types/task'
 
 export function NextTaskWidget({
   task,
@@ -12,7 +12,7 @@ export function NextTaskWidget({
 }) {
   if (!task) {
     return (
-      <div className="rounded-lg border bg-muted/20 p-4 flex items-center gap-3 text-muted-foreground">
+      <div className="glass-widget border-none flex items-center gap-3 text-muted-foreground">
         <Timer className="w-5 h-5" />
         <div>
           <p className="text-sm font-medium">Nothing scheduled next</p>
@@ -27,8 +27,8 @@ export function NextTaskWidget({
 
   return (
     <div
-      className={`rounded-lg border p-4 ${
-        isNotifyWindow ? 'border-amber-500/40 bg-amber-500/5' : 'bg-muted/10'
+      className={`glass border-none rounded-2xl p-4 ${
+        isNotifyWindow ? 'bg-amber-500/10 dark:bg-amber-500/5' : ''
       }`}
     >
       <div className="flex items-center gap-2 mb-2">

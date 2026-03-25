@@ -10,7 +10,7 @@ export function StatCard({
   accent: string
 }) {
   return (
-    <div className="rounded-lg border bg-card p-4 flex items-center gap-3">
+    <div className="glass-widget border-none flex items-center gap-3">
       <div
         className={`w-9 h-9 rounded-md flex items-center justify-center ${accent}`}
       >

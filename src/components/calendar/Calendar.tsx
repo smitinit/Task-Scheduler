@@ -94,10 +94,11 @@ const notifyPresets = [
 ]
 
 function statusColor(status: LoadedTask['status'], isFocus: boolean) {
-  if (isFocus) return { bg: '#6366f1', border: '#4f46e5' } // indigo focus
-  if (status === 'completed') return { bg: '#22c55e', border: '#16a34a' }
-  if (status === 'missed') return { bg: '#f87171', border: '#ef4444' }
-  return { bg: '#3b82f6', border: '#2563eb' } // scheduled
+  // Using theme colors: primary orange for scheduled/focus, green for completed, red for missed
+  if (isFocus) return { bg: '#f59e0b', border: '#d97706' } // amber as focus accent
+  if (status === 'completed') return { bg: '#10b981', border: '#059669' } // green
+  if (status === 'missed') return { bg: '#ef4444', border: '#dc2626' } // red
+  return { bg: '#f59e0b', border: '#d97706' } // amber as primary accent
 }
 
 /* ─── Custom Event Component ─── */
@@ -444,10 +445,10 @@ function CalendarLegend() {
   return (
     <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
       {[
-        { label: 'Scheduled', bg: '#3b82f6' },
-        { label: 'Focus', bg: '#6366f1' },
-        { label: 'Completed', bg: '#22c55e' },
-        { label: 'Missed', bg: '#f87171' },
+        { label: 'Scheduled', bg: '#f59e0b' },
+        { label: 'Focus', bg: '#fbbf24' },
+        { label: 'Completed', bg: '#10b981' },
+        { label: 'Missed', bg: '#ef4444' },
       ].map((item) => (
         <span key={item.label} className="flex items-center gap-1.5">
           <span
@@ -511,16 +512,23 @@ export function CalendarPage() {
   const navigate = useNavigate()
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="max-w-7xl mx-auto py-8 px-4 space-y-6">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Calendar</h1>
+          <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
+            {format(date, 'MMMM yyyy')}
+          </p>
+          <h1 className="text-2xl font-bold mt-0.5">Calendar</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Click any slot to schedule a task
           </p>
         </div>
-        <Button onClick={() => navigate({ to: '/add' })}>
-          <Plus className="h-4 w-4" />
+        <Button
+          size="sm"
+          onClick={() => navigate({ to: '/add' })}
+          className="gap-1.5"
+        >
+          <Plus className="h-3.5 w-3.5" />
           New Task
         </Button>
       </div>

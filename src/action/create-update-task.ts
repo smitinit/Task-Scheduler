@@ -1,9 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
 import { and, eq } from 'drizzle-orm'
-import { getCurrentSession } from '@/lib/sessions'
+import { getCurrentSession } from '@/lib/sessions.server'
 import { db } from '@/db'
 import { tasks } from '@/db/task'
 import { serverTaskSchema } from '@/zod/server-task-schema'
+import { errors } from '@/lib/errors'
 
 export const createOrUpdateTodo = createServerFn({
   method: 'POST',
@@ -14,7 +15,7 @@ export const createOrUpdateTodo = createServerFn({
 
     const { user } = await getCurrentSession()
 
-    if (!user) throw new Error('Unauthorized')
+    if (!user) throw errors.unauthorized()
 
     // ---- DERIVE STATUS FROM TIME ONLY ----
     let status: 'scheduled' | 'completed' | 'missed'

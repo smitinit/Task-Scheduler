@@ -1,24 +1,37 @@
-﻿import { createFileRoute } from '@tanstack/react-router'
-import { Insights } from '@/components/insights'
+﻿import { createFileRoute, redirect } from '@tanstack/react-router'
+import { Suspense, lazy } from 'react'
 import { getTasks } from '@/action/get-task'
-import { authMiddleware } from '@/middleware/auth'
-import { InsightsSkeleton } from '@/components/Skeletons'
+import { checkRouteAuth } from '@/lib/auth-check'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 
-/* ── Route ── */
+// Lazy load Insights component to defer loading heavy chart libraries
+// Only loaded when user navigates to /insights route
+const Insights = lazy(() =>
+  import('@/components/insights').then((m) => ({ default: m.Insights })),
+)
 
 export const Route = createFileRoute('/insights')({
+  beforeLoad: async () => {
+    // Auth check - redirect to login if not authenticated
+    const user = await checkRouteAuth()
+    if (!user) {
+      throw redirect({ to: '/login' })
+    }
+  },
   loader: async () => {
-    const tasks = await getTasks()
+    // Load tasks in parallel - prepared for future parallelization
+    const [tasks] = await Promise.all([getTasks()])
     return { tasks }
   },
   component: InsightsPage,
-  pendingComponent: InsightsSkeleton,
-  server: { middleware: [authMiddleware] },
+  pendingComponent: LoadingSpinner,
 })
-
-/* ── Page ── */
 
 function InsightsPage() {
   const { tasks } = Route.useLoaderData()
-  return <Insights tasks={tasks} />
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <Insights tasks={tasks} />
+    </Suspense>
+  )
 }

@@ -1,64 +1,54 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
-import { Loader } from 'lucide-react'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
+import { Loader, ArrowLeft } from 'lucide-react'
 import { FcGoogle } from 'react-icons/fc'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { signInWithGoogle } from '@/action/auth'
-import { useUser } from '@/hooks/useUser'
+import { signInWithGoogle } from '@/lib/auth/client'
+import { getSessionUser } from '@/lib/sessions'
 
 export const Route = createFileRoute('/register')({
+  beforeLoad: async () => {
+    // Redirect authenticated users to dashboard
+    const user = await getSessionUser()
+    if (user) {
+      throw redirect({ to: '/dashboard' })
+    }
+  },
   component: RegisterPage,
 })
 
 function RegisterPage() {
   const navigate = useNavigate()
-  const { data: user, isLoading } = useUser()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // Redirect logged-in users to dashboard
-  useEffect(() => {
-    if (user) {
-      navigate({ to: '/dashboard' })
-    }
-  }, [user, isLoading, navigate])
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader className="h-8 w-8 animate-spin" />
-      </div>
-    )
-  }
-
-  if (user) {
-    return null // Will redirect, so don't render anything
-  }
-
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
     setError(null)
     setLoading(true)
 
     try {
-      // Don't await - let Better Auth handle the OAuth redirect to Google
-      // This will redirect to Google's consent screen, not to /dashboard
-      signInWithGoogle()
+      // signInWithGoogle will redirect to Google's consent screen
+      await signInWithGoogle()
     } catch (err: any) {
       setLoading(false)
       const message = err?.message || 'Google sign in failed'
-      // Better error handling for JSON parsing issues
-      if (message.includes('DOCTYPE') || message.includes('Unexpected token')) {
-        setError('Server error: Please check your auth configuration')
-      } else {
-        setError(message)
-      }
+      setError(message)
     }
   }
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Back to Home Button */}
+      <button
+        onClick={() => navigate({ to: '/' })}
+        className="absolute top-4 left-4 p-2 rounded-lg hover:bg-background/80 dark:hover:bg-background/60 transition-all flex items-center gap-2 text-foreground/70 hover:text-foreground"
+        aria-label="Back to home"
+        title="Back to home"
+      >
+        <ArrowLeft size={20} />
+      </button>
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <Card className="w-full max-w-md shadow-xl border">
           <CardHeader>

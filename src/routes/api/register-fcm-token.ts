@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { db } from '@/db'
 import { fcmTokens } from '@/db/fcmTokens'
-import { getCurrentSession } from '@/lib/sessions'
+import { getCurrentSession } from '@/lib/sessions.server'
 
 export const Route = createFileRoute('/api/register-fcm-token')({
   server: {

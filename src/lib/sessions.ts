@@ -1,19 +1,26 @@
-import { getRequestHeaders } from '@tanstack/react-start/server'
-import { auth } from '@/lib/auth-server'
+/**
+ * Session management - ISOMORPHIC
+ * Client-side server function to get session data
+ *
+ * Server-only logic moved to sessions.server.ts
+ */
 
-export async function getCurrentSession() {
-  try {
-    const headers = getRequestHeaders()
+import { createServerFn } from '@tanstack/react-start'
+import { getCurrentSession } from '@/lib/sessions.server'
 
-    const session = await auth.api.getSession({
-      headers: headers,
-    })
-
-    return {
-      user: session?.user || null,
-      session: session?.session || null,
-    }
-  } catch (error) {
-    return { user: null, session: null }
-  }
-}
+/**
+ * Server function for getting session from client
+ * Automatically handles auth middleware and caching
+ *
+ * Usage in components:
+ * ```ts
+ * const session = await getSessionUser()
+ * if (!session) navigate({ to: '/login' })
+ * ```
+ */
+export const getSessionUser = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const { user } = await getCurrentSession()
+    return user
+  },
+)
