@@ -18,12 +18,9 @@ const authInstance = betterAuth({
     schema: authSchema,
   }),
   trustedOrigins: [
-    'http://localhost:4173',
     'http://localhost:3000',
-    'https://yourdomain.com',
+    'https://task-scheduler.appwrite.network',
   ],
-
-  trustedProxies: ['127.0.0.1', '::1', '::ffff:127.0.0.1', '0.0.0.0'],
 
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
