@@ -3,7 +3,7 @@ import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '@/db'
 import { tasks } from '@/db/task'
-import { getCurrentSession } from '@/lib/sessions.server'
+import { getCurrentSession } from '@/lib/session-server'
 import { errors } from '@/lib/errors'
 
 export const deleteTask = createServerFn({

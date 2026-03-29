@@ -15,7 +15,6 @@ const clientEnvSchema = z.object({
     .min(1, 'Missing Firebase messaging sender ID'),
   VITE_FIREBASE_APP_ID: z.string().min(1, 'Missing Firebase app ID'),
   VITE_FIREBASE_VAPID_KEY: z.string().min(1, 'Missing Firebase VAPID key'),
-  VITE_BETTER_AUTH_URL: z.string().url('Invalid Better Auth URL'),
 })
 
 // Server-side environment variables (NOT available in browser, only in server functions)

@@ -23,3 +23,32 @@ self.addEventListener('install', () => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim())
 })
+
+messaging.onBackgroundMessage((payload) => {
+  const notification = payload?.notification ?? {}
+  const data = payload?.data ?? {}
+
+  const title = data.title || notification.title || 'Task Scheduler'
+  const options = {
+    body: data.body || notification.body || 'You have a new notification.',
+    icon: data.icon || notification.icon || '/icon-192.png',
+    data,
+  }
+
+  self.registration.showNotification(title, options)
+})
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clients) => {
+        for (const client of clients) {
+          if ('focus' in client) return client.focus()
+        }
+        return self.clients.openWindow('/')
+      }),
+  )
+})

@@ -94,11 +94,26 @@ const notifyPresets = [
 ]
 
 function statusColor(status: LoadedTask['status'], isFocus: boolean) {
-  // Using theme colors: primary orange for scheduled/focus, green for completed, red for missed
-  if (isFocus) return { bg: '#f59e0b', border: '#d97706' } // amber as focus accent
-  if (status === 'completed') return { bg: '#10b981', border: '#059669' } // green
-  if (status === 'missed') return { bg: '#ef4444', border: '#dc2626' } // red
-  return { bg: '#f59e0b', border: '#d97706' } // amber as primary accent
+  // Using theme colors: primary for scheduled/focus, chart-1 for completed, destructive for missed
+  if (isFocus)
+    return {
+      bg: 'var(--primary)',
+      border: 'color-mix(in oklch, var(--primary) 60%, var(--foreground))',
+    }
+  if (status === 'completed')
+    return {
+      bg: 'var(--chart-1)',
+      border: 'color-mix(in oklch, var(--chart-1) 60%, var(--foreground))',
+    }
+  if (status === 'missed')
+    return {
+      bg: 'var(--destructive)',
+      border: 'color-mix(in oklch, var(--destructive) 60%, var(--foreground))',
+    }
+  return {
+    bg: 'var(--primary)',
+    border: 'color-mix(in oklch, var(--primary) 60%, var(--foreground))',
+  }
 }
 
 /* ─── Custom Event Component ─── */
@@ -447,13 +462,13 @@ function CalendarLegend() {
       {[
         { label: 'Scheduled', bg: '#f59e0b' },
         { label: 'Focus', bg: '#fbbf24' },
-        { label: 'Completed', bg: '#10b981' },
-        { label: 'Missed', bg: '#ef4444' },
+        { label: 'Completed', color: 'var(--chart-1)' },
+        { label: 'Missed', color: 'var(--destructive)' },
       ].map((item) => (
         <span key={item.label} className="flex items-center gap-1.5">
           <span
             className="inline-block w-2.5 h-2.5 rounded-sm"
-            style={{ background: item.bg }}
+            style={{ background: item.color }}
           />
           {item.label}
         </span>

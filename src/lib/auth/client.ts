@@ -4,8 +4,9 @@
  * and interact directly with Better Auth client
  */
 
-import { client } from '@/lib/auth'
+import { client } from '@/lib/better-auth-client'
 import { errors } from '@/lib/errors'
+import { warmupFCMTokenOnAuthGesture } from '@/lib/firebase-client'
 
 /**
  * Sign in with Google
@@ -13,6 +14,9 @@ import { errors } from '@/lib/errors'
  */
 export async function signInWithGoogle(): Promise<void> {
   try {
+    // Best-effort warmup so token can be captured during the login/signup click gesture.
+    await warmupFCMTokenOnAuthGesture()
+
     // Don't await - let Better Auth handle the OAuth redirect naturally
     await client.signIn.social({
       provider: 'google',

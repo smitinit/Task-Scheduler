@@ -1,6 +1,11 @@
-import { taskStatusEnum, tasks } from './task'
-import { notifications } from './notification'
-import { fcmTokens } from './fcmTokens'
+import { taskRelations, taskStatusEnum, tasks } from './task'
+import {
+  notificationRelations,
+  notificationStatusEnum,
+  notificationTypeEnum,
+  notifications,
+} from './notification'
+import { fcmTokenRelations, fcmTokens } from './fcmTokens'
 import {
   account,
   accountRelations,
@@ -15,10 +20,15 @@ import {
 export const schema = {
   account,
   accountRelations,
+  fcmTokenRelations,
   fcmTokens,
+  notificationRelations,
+  notificationStatusEnum,
+  notificationTypeEnum,
   notifications,
   session,
   sessionRelations,
+  taskRelations,
   taskStatusEnum,
   tasks,
   user,

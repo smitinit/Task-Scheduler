@@ -1,34 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { and, eq, isNull, lt } from 'drizzle-orm'
-import admin from 'firebase-admin'
 import { db } from '@/db'
 import { tasks } from '@/db/task'
 import { notifications } from '@/db/notification'
 import { fcmTokens } from '@/db/fcmTokens'
-
-/*
-=================================================
-FIREBASE INIT (once per runtime)
-=================================================
-*/
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
-  })
-}
-
-const messaging = admin.messaging()
-
-/*
-=================================================
-ROUTE
-=================================================
-*/
+import { getFirebaseMessaging } from '@/lib/firebase-admin'
 
 export const Route = createFileRoute('/api/sync-task-status')({
   server: {
@@ -39,6 +15,17 @@ export const Route = createFileRoute('/api/sync-task-status')({
 
         if (!authHeader || authHeader !== expected) {
           return new Response('Unauthorized', { status: 401 })
+        }
+
+        let messaging
+
+        try {
+          messaging = getFirebaseMessaging()
+        } catch (error) {
+          console.error('Firebase Admin initialization failed:', error)
+          return new Response('Firebase is not configured correctly', {
+            status: 500,
+          })
         }
 
         const now = new Date()
@@ -109,13 +96,22 @@ export const Route = createFileRoute('/api/sync-task-status')({
 
         for (const notification of claimed) {
           try {
-            const [task] = await db
+            const taskRows = await db
               .select()
               .from(tasks)
               .where(eq(tasks.id, notification.taskId))
+            const task = taskRows.at(0)
+
+            if (!task) {
+              await db
+                .update(notifications)
+                .set({ status: 'failed' })
+                .where(eq(notifications.id, notification.id))
+              continue
+            }
 
             const tokens = await db
-              .select()
+              .select({ token: fcmTokens.token })
               .from(fcmTokens)
               .where(eq(fcmTokens.userId, task.userId))
 
@@ -142,13 +138,17 @@ export const Route = createFileRoute('/api/sync-task-status')({
             const response = await messaging.sendEachForMulticast({
               tokens: tokenList,
               webpush: {
-                notification: { title, body, icon: '/icon-192.png' },
+                data: {
+                  title,
+                  body,
+                  icon: '/icon-192.png',
+                },
               },
             })
 
             // handle response, remove invalid tokens, and mark notification as sent or failed
 
-            response.responses.forEach(async (res, idx) => {
+            for (const [idx, res] of response.responses.entries()) {
               if (!res.success) {
                 const errorCode = res.error?.code
 
@@ -162,7 +162,7 @@ export const Route = createFileRoute('/api/sync-task-status')({
                     .where(eq(fcmTokens.token, tokenList[idx]))
                 }
               }
-            })
+            }
 
             await db
               .update(notifications)

@@ -25,7 +25,7 @@ import {
   roundToNext5Minutes,
   toInputDateTime,
 } from '@/lib/task-utils'
-import { checkRouteAuth } from '@/lib/auth-check'
+import { checkRouteAuth } from '@/lib/route-access'
 
 type TaskFormValues = z.infer<typeof taskSchema>
 

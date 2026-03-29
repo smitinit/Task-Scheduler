@@ -60,12 +60,11 @@ export function Insights({ tasks }: InsightsPageProps) {
       </div>
 
       {/* Top-level metrics */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
           label="Completion rate"
           value={`${pct(overallStats.completed, overallStats.total)}%`}
           icon={CheckCircle2}
-          accent="bg-emerald-500/10 text-emerald-500"
           trend={
             pct(overallStats.completed, overallStats.total) >= 70
               ? 'up'
@@ -76,7 +75,6 @@ export function Insights({ tasks }: InsightsPageProps) {
           label="Total time tracked"
           value={minutesToHours(overallStats.totalMinutes)}
           icon={Clock}
-          accent="bg-blue-500/10 text-blue-500"
         />
         <MetricCard
           label="Avg task duration"
@@ -84,13 +82,11 @@ export function Insights({ tasks }: InsightsPageProps) {
             overallStats.avgDuration > 0 ? `${overallStats.avgDuration}m` : '—'
           }
           icon={Flame}
-          accent="bg-primary/10 text-primary"
         />
         <MetricCard
           label="Miss rate"
           value={`${pct(overallStats.missed, overallStats.total)}%`}
           icon={XCircle}
-          accent="bg-destructive/10 text-destructive"
           trend={
             pct(overallStats.missed, overallStats.total) <= 20 ? 'up' : 'down'
           }

@@ -1,19 +1,18 @@
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
-import { motion } from 'framer-motion'
 import { useHotkey } from '@tanstack/react-hotkeys'
 import {
-  Home,
-  Plus,
-  LayoutDashboard,
-  CheckSquare,
   BarChart3,
   Calendar,
-  ChevronUp,
-  ChevronDown,
+  CheckSquare,
+  Home,
+  LayoutDashboard,
+  LogIn,
+  Plus,
 } from 'lucide-react'
 import { useUser } from '@/hooks/useUser'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import LogoutButton from '@/components/LogoutButton'
+import { FCMInitializer } from '@/components/FCMInitilizer'
 
 const NAV_ITEMS = [
   {
@@ -60,21 +59,14 @@ const NAV_ITEMS = [
   },
 ]
 
-interface RightSidebarProps {
-  open: boolean
-  setOpen: (open: boolean) => void
-}
-
-export default function RightSidebar({ open, setOpen }: RightSidebarProps) {
+export default function RightSidebar() {
   const { data: user } = useUser()
   const location = useLocation()
   const navigate = useNavigate()
 
   const isActive = (to: string) => location.pathname === to
 
-  // Register hotkeys
-  useHotkey('Mod+B', () => setOpen(!open), { preventDefault: true })
-
+  // Register navigation hotkeys
   useHotkey(
     'Mod+0',
     () => {
@@ -82,8 +74,6 @@ export default function RightSidebar({ open, setOpen }: RightSidebarProps) {
     },
     { preventDefault: true },
   )
-
-  // Register navigation hotkeys
   useHotkey(
     'Mod+1',
     () => {
@@ -125,94 +115,64 @@ export default function RightSidebar({ open, setOpen }: RightSidebarProps) {
   )
 
   return (
-    <>
-      {user && (
-        <>
-          {/* Open Button - Shows when taskbar is hidden */}
-          {!open && (
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ type: 'spring', damping: 35, stiffness: 400 }}
-              onClick={() => setOpen(true)}
-              className="fixed bottom-6 left-6 z-40 p-3 rounded-lg glass hover:bg-background/80 dark:hover:bg-background/60 transition-all shadow-lg"
-              aria-label="Open taskbar (Mod+B)"
-              title="Open taskbar (Mod+B)"
-            >
-              <ChevronUp size={24} className="text-foreground" />
-            </motion.button>
-          )}
+    <aside
+      className="fixed left-0 top-0 bottom-0 z-40 w-20 flex flex-col items-center justify-between py-4 border-r border-border bg-linear-to-b from-background/80 to-background/60 backdrop-blur-md"
+      style={{ top: 'var(--app-top-offset, 0px)' }}
+      aria-label="Left sidebar navigation"
+      role="complementary"
+    >
+      {/* Nav items - vertical */}
+      <nav
+        className="flex flex-col items-center gap-2 flex-1 justify-center"
+        aria-label="Main navigation"
+      >
+        {NAV_ITEMS.map((item) => {
+          const Icon = item.icon
+          const active = isActive(item.to)
 
-          {/* Bottom Taskbar */}
-          <motion.aside
-            initial={{ y: open ? 0 : 100 }}
-            animate={open ? { y: 0 } : { y: 100 }}
-            transition={{ type: 'spring', damping: 35, stiffness: 400 }}
-            className="bottom-taskbar fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between px-4"
-            aria-label="Bottom taskbar navigation"
-            role="complementary"
-          >
-            {/* Toggle Button */}
-            <button
-              onClick={() => setOpen(!open)}
-              className="p-2 rounded-lg transition-all"
-              aria-label={
-                open ? 'Hide taskbar (Mod+B)' : 'Show taskbar (Mod+B)'
-              }
-              title={open ? 'Hide taskbar (Mod+B)' : 'Show taskbar (Mod+B)'}
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`flex items-center justify-center p-2 rounded-lg transition-all duration-200 relative group ${
+                active
+                  ? ' text-primary'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+              }`}
+              title={`${item.label} (${item.hotkeyDisplay})`}
+              aria-current={active ? 'page' : undefined}
             >
-              {open ? (
-                <ChevronDown size={20} className="text-foreground" />
-              ) : (
-                <ChevronUp size={20} className="text-foreground" />
+              <Icon size={20} className="shrink-0" aria-hidden="true" />
+              {active && (
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-1 bg-primary rounded-full" />
               )}
-            </button>
+              <span className="sr-only">{item.label}</span>
+            </Link>
+          )
+        })}
+      </nav>
 
-            {/* Nav items - centered */}
-            <nav
-              className="flex items-center gap-2 flex-1 justify-center"
-              aria-label="Main navigation"
-            >
-              {NAV_ITEMS.map((item) => {
-                const Icon = item.icon
-                const active = isActive(item.to)
-
-                return (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    className={`taskbar-nav-item flex items-center justify-center p-2 rounded-lg transition-all duration-200 relative group ${
-                      active
-                        ? 'active'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                    title={`${item.label} (${item.hotkeyDisplay})`}
-                    aria-current={active ? 'page' : undefined}
-                  >
-                    <Icon
-                      size={20}
-                      className="flex-shrink-0"
-                      aria-hidden="true"
-                    />
-                    <span className="sr-only">{item.label}</span>
-                  </Link>
-                )
-              })}
-            </nav>
-
-            {/* Right side - Theme Toggle and Logout */}
-            <div
-              className="flex items-center gap-1 flex-shrink-0"
-              role="region"
-              aria-label="Settings"
-            >
-              <ThemeToggle />
-              <LogoutButton />
-            </div>
-          </motion.aside>
-        </>
-      )}
-    </>
+      {/* Bottom - Theme Toggle and Auth Controls */}
+      <div
+        className="flex flex-col items-center gap-1 shrink-0"
+        role="region"
+        aria-label="Settings"
+      >
+        <FCMInitializer />
+        <ThemeToggle />
+        {user ? (
+          <LogoutButton />
+        ) : (
+          <Link
+            to="/login"
+            className="p-2 rounded-lg transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-background/50"
+            title="Login"
+            aria-label="Login"
+          >
+            <LogIn size={20} className="shrink-0" aria-hidden="true" />
+          </Link>
+        )}
+      </div>
+    </aside>
   )
 }

@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { getTasksForForm } from '@/action/get-tasks-for-form'
-import { checkRouteAuth } from '@/lib/auth-check'
+import { checkRouteAuth } from '@/lib/route-access'
 import { CalendarPage } from '@/components/calendar/Calendar'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import 'react-big-calendar/lib/css/react-big-calendar.css'

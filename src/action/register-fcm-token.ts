@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
-import { eq } from 'drizzle-orm'
-import { getCurrentSession } from '@/lib/sessions.server'
+import { and, eq, ne } from 'drizzle-orm'
+import { getCurrentSession } from '@/lib/session-server'
 import { db } from '@/db'
 import { fcmTokens } from '@/db/fcmTokens'
 import { errors } from '@/lib/errors'
@@ -18,34 +18,56 @@ export const registerFCMToken = createServerFn({
     const { user } = await getCurrentSession()
 
     if (!user) {
+      console.warn('[FCM] registerFCMToken rejected: unauthorized request')
       throw errors.unauthorized()
     }
 
     if (!token) {
+      console.warn('[FCM] registerFCMToken rejected: empty token payload')
       throw errors.badRequest('FCM token required')
     }
 
-    // Check if token already exists for this user
-    const existing = await db
-      .select()
-      .from(fcmTokens)
-      .where(eq(fcmTokens.userId, user.id))
+    console.info(`[FCM] Persisting token for user ${user.id}`)
 
-    if (existing.length > 0) {
-      // Update existing token
-      await db
-        .update(fcmTokens)
-        .set({
-          token,
-        })
-        .where(eq(fcmTokens.userId, user.id))
-    } else {
-      // Create new token record
-      await db.insert(fcmTokens).values({
+    const alreadyBound = await db
+      .select({ token: fcmTokens.token })
+      .from(fcmTokens)
+      .where(and(eq(fcmTokens.userId, user.id), eq(fcmTokens.token, token)))
+
+    if (alreadyBound.length > 0) {
+      console.info(`[FCM] Token already mapped for user ${user.id}`)
+      return { success: true }
+    }
+
+    // Upsert by token so a token can move between users safely.
+    await db
+      .insert(fcmTokens)
+      .values({
         userId: user.id,
         token,
       })
+      .onConflictDoUpdate({
+        target: fcmTokens.token,
+        set: {
+          userId: user.id,
+        },
+      })
+
+    // Keep one active token per user by removing stale rows for the same user.
+    await db
+      .delete(fcmTokens)
+      .where(and(eq(fcmTokens.userId, user.id), ne(fcmTokens.token, token)))
+
+    const persisted = await db
+      .select({ token: fcmTokens.token })
+      .from(fcmTokens)
+      .where(and(eq(fcmTokens.userId, user.id), eq(fcmTokens.token, token)))
+
+    if (persisted.length === 0) {
+      throw new Error('FCM token persistence failed after upsert')
     }
+
+    console.info(`[FCM] Token persisted and normalized for user ${user.id}`)
 
     return { success: true }
   })

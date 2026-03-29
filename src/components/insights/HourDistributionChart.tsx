@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react'
 import { getHours } from 'date-fns'
-import { useTheme } from 'next-themes'
 import {
   Area,
   AreaChart,
   CartesianGrid,
+  Legend,
   ReferenceLine,
   ResponsiveContainer,
   Tooltip,
@@ -14,6 +14,7 @@ import {
 import { SectionHeader } from './SectionHeader'
 import type { HourDataPoint, Task } from './types'
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
+import { useChartColors } from '@/hooks/useChartColors'
 
 interface HourDistributionChartProps {
   tasks: Array<Task>
@@ -22,7 +23,7 @@ interface HourDistributionChartProps {
 export const HourDistributionChart: React.FC<HourDistributionChartProps> = ({
   tasks,
 }) => {
-  const { theme } = useTheme()
+  const colors = useChartColors()
 
   const hourData = useMemo<Array<HourDataPoint>>(() => {
     const buckets: Record<number, { scheduled: number; completed: number }> = {}
@@ -51,27 +52,15 @@ export const HourDistributionChart: React.FC<HourDistributionChartProps> = ({
     )
   }, [hourData])
 
-  const isDark = theme === 'dark'
   const chartConfig = {
     scheduled: {
       label: 'Scheduled',
-      theme: {
-        light: '#d1d5db',
-        dark: '#6b7280',
-      },
+      color: colors.scheduled,
     },
     completed: {
       label: 'Completed',
-      theme: {
-        light: '#f59e0b',
-        dark: '#fbbf24',
-      },
+      color: colors.completed,
     },
-  }
-
-  const colors = {
-    scheduled: isDark ? '#6b7280' : '#d1d5db',
-    completed: isDark ? '#fbbf24' : '#f59e0b',
   }
 
   return (
@@ -80,75 +69,98 @@ export const HourDistributionChart: React.FC<HourDistributionChartProps> = ({
         title="Peak Productivity Hours"
         subtitle="Task activity by hour of day"
       />
-      <ChartContainer config={chartConfig} className="h-[250px] w-full">
+      <ChartContainer config={chartConfig} className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={hourData}
-            margin={{ top: 24, right: 4, left: -18, bottom: 0 }}
+            margin={{ top: 16, right: 8, left: -12, bottom: 8 }}
           >
             <defs>
-              {/* Scheduled: muted fill */}
-              <linearGradient id="fillScheduled" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient
+                id="completedGradient"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
                 <stop
-                  offset="0%"
-                  stopColor={colors.scheduled}
-                  stopOpacity={0.3}
-                />
-                <stop
-                  offset="100%"
-                  stopColor={colors.scheduled}
-                  stopOpacity={0}
-                />
-              </linearGradient>
-              {/* Completed: primary fill */}
-              <linearGradient id="fillCompleted" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="0%"
+                  offset="5%"
                   stopColor={colors.completed}
                   stopOpacity={0.4}
                 />
                 <stop
-                  offset="100%"
+                  offset="95%"
                   stopColor={colors.completed}
-                  stopOpacity={0.05}
+                  stopOpacity={0}
+                />
+              </linearGradient>
+              <linearGradient
+                id="scheduledGradient"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop
+                  offset="5%"
+                  stopColor={colors.scheduled}
+                  stopOpacity={0.3}
+                />
+                <stop
+                  offset="95%"
+                  stopColor={colors.scheduled}
+                  stopOpacity={0}
                 />
               </linearGradient>
             </defs>
             <CartesianGrid
+              stroke={colors.grid}
               strokeDasharray="3 3"
               vertical={false}
-              stroke="hsl(var(--border))"
+              opacity={0.4}
             />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+              tick={{
+                fontSize: 12,
+                fill: colors.text,
+              }}
               interval={2}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+              tick={{
+                fontSize: 12,
+                fill: colors.text,
+              }}
               axisLine={false}
               tickLine={false}
               allowDecimals={false}
-              width={22}
+              width={28}
             />
             <Tooltip
-              cursor={{ stroke: 'hsl(var(--primary) / 0.3)', strokeWidth: 2 }}
+              cursor={{ stroke: colors.completed + '40', strokeWidth: 2 }}
               content={<ChartTooltipContent hideLabel hideIndicator />}
             />
-            {/* Peak hour reference line */}
+            <Legend
+              wrapperStyle={{
+                paddingTop: '16px',
+              }}
+              iconType="line"
+            />
             {peakHour.completed > 0 && (
               <ReferenceLine
                 x={peakHour.label}
                 stroke={colors.completed}
                 strokeDasharray="4 3"
                 strokeWidth={1.5}
+                opacity={0.6}
                 label={{
                   value: 'Peak',
                   position: 'top',
-                  fontSize: 9,
-                  fill: colors.completed,
+                  fontSize: 11,
+                  fill: colors.text,
                 }}
               />
             )}
@@ -157,13 +169,13 @@ export const HourDistributionChart: React.FC<HourDistributionChartProps> = ({
               dataKey="scheduled"
               name="Scheduled"
               stroke={colors.scheduled}
-              strokeWidth={1.5}
-              fill="url(#fillScheduled)"
+              fill="url(#scheduledGradient)"
+              strokeWidth={2}
               dot={false}
+              animationDuration={600}
               activeDot={{
-                r: 4,
+                r: 5,
                 strokeWidth: 2,
-                stroke: 'hsl(var(--background))',
                 fill: colors.scheduled,
               }}
             />
@@ -172,30 +184,19 @@ export const HourDistributionChart: React.FC<HourDistributionChartProps> = ({
               dataKey="completed"
               name="Completed"
               stroke={colors.completed}
+              fill="url(#completedGradient)"
               strokeWidth={2.5}
-              fill="url(#fillCompleted)"
               dot={false}
+              animationDuration={600}
               activeDot={{
                 r: 5,
                 strokeWidth: 2,
-                stroke: 'hsl(var(--background))',
                 fill: colors.completed,
               }}
             />
           </AreaChart>
         </ResponsiveContainer>
       </ChartContainer>
-
-      <div className="flex items-center gap-4 mt-3 justify-end">
-        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-          <span className="w-4 h-[2px] rounded shrink-0 bg-slate-400 dark:bg-slate-600" />
-          Scheduled
-        </span>
-        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-          <span className="w-4 h-[2px] rounded shrink-0 bg-blue-600 dark:bg-blue-400" />
-          Completed
-        </span>
-      </div>
     </div>
   )
 }

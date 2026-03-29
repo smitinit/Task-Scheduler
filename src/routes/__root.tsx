@@ -5,7 +5,7 @@ import {
   useLocation,
 } from '@tanstack/react-router'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { HotkeysProvider } from '@tanstack/react-hotkeys'
 import RightSidebar from '../components/RightSidebar'
 import Footer from '../components/Footer'
@@ -61,7 +61,6 @@ function ScrollToTop() {
 function RootDocument({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const shouldShowFooter = location.pathname === '/'
-  const [taskbarOpen, setTaskbarOpen] = useState(true)
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -82,16 +81,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           >
             <ScrollToTop />
             <div className="flex flex-col h-screen">
-              {/* Main content */}
-              <main className="flex-1 overflow-auto pb-[100px]">
+              {/* Main content - with left padding for sidebar (always visible) */}
+              <main
+                className="flex-1 overflow-auto"
+                style={{
+                  marginLeft: '80px',
+                  paddingTop: 'var(--app-top-offset, 0px)',
+                }}
+              >
                 <div className="mx-auto max-w-6xl p-4 min-h-screen">
                   {children}
                 </div>
                 {shouldShowFooter && <Footer />}
               </main>
 
-              {/* Bottom taskbar */}
-              <RightSidebar open={taskbarOpen} setOpen={setTaskbarOpen} />
+              {/* Left sidebar - always fixed and visible */}
+              <RightSidebar />
             </div>
           </HotkeysProvider>
         </ThemeProvider>

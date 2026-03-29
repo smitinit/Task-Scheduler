@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm'
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCurrentSession } from '@/lib/sessions.server'
+import { getCurrentSession } from '@/lib/session-server'
 import { db } from '@/db'
 import { tasks } from '@/db/task'
 import { errors } from '@/lib/errors'

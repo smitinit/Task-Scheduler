@@ -2,7 +2,7 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { format, isSameDay } from 'date-fns'
 import { useTransition } from 'react'
 import { Loader, Trash2 } from 'lucide-react'
-import { checkRouteAuth } from '@/lib/auth-check'
+import { checkRouteAuth } from '@/lib/route-access'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 import { getTaskById } from '@/action/get-task-by-id'

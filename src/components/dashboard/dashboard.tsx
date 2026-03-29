@@ -30,15 +30,18 @@ import { ActiveTaskWidget } from '@/components/dashboard/ActiveTaskWidget'
 import { NextTaskWidget } from '@/components/dashboard/NextTaskWidget'
 
 export default function DashboardPage() {
-  const { tasks: initialTasks } = useLoaderData({ from: '/dashboard' })
+  const { tasks: initialTasks, serverNowIso } = useLoaderData({
+    from: '/dashboard',
+  })
+  const initialNow = useMemo(() => new Date(serverNowIso), [serverNowIso])
   const [tasks, setTasks] = useState<Array<Task>>(initialTasks as Array<Task>)
-  const [now, setNow] = useState(new Date())
+  const [now, setNow] = useState(initialNow)
   const [showAdd, setShowAdd] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
 
   // Use a ref for current time to avoid unnecessary re-renders
   // Only update state at strategic points or when tasks change
-  const nowRef = useRef(new Date())
+  const nowRef = useRef(initialNow)
 
   // Update time reference every second, but don't trigger re-renders
   // Only re-render when minute changes or active task might change
@@ -198,31 +201,19 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Today's Tasks"
           value={stats.total}
           icon={CalendarClock}
-          accent="bg-blue-500/10 text-blue-500"
         />
         <StatCard
           label="Completed"
           value={stats.completed}
           icon={CheckCircle2}
-          accent="bg-emerald-500/10 text-emerald-500"
         />
-        <StatCard
-          label="Missed"
-          value={stats.missed}
-          icon={XCircle}
-          accent="bg-red-500/10 text-red-500"
-        />
-        <StatCard
-          label="Focus Sessions"
-          value={stats.focus}
-          icon={Zap}
-          accent="bg-indigo-500/10 text-indigo-500"
-        />
+        <StatCard label="Missed" value={stats.missed} icon={XCircle} />
+        <StatCard label="Focus Sessions" value={stats.focus} icon={Zap} />
       </div>
 
       {/* Main content */}
@@ -233,7 +224,10 @@ export default function DashboardPage() {
             <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
               Today's Timeline
             </h2>
-            <span className="font-mono text-xs text-muted-foreground tabular-nums">
+            <span
+              className="font-mono text-xs text-muted-foreground tabular-nums"
+              suppressHydrationWarning
+            >
               {format(now, 'HH:mm:ss')}
             </span>
           </div>

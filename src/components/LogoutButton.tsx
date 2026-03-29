@@ -3,7 +3,11 @@ import { Loader, LogOutIcon } from 'lucide-react'
 import { useTransition } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { signOut } from '@/lib/auth/client'
-import { getFCMToken } from '@/lib/firebase-client'
+import {
+  clearCachedFCMToken,
+  getStoredFCMToken,
+  popPendingFCMToken,
+} from '@/lib/firebase-client'
 
 export default function LogoutButton() {
   const navigate = useNavigate()
@@ -13,23 +17,26 @@ export default function LogoutButton() {
   const handleLogout = () => {
     startTransition(async () => {
       try {
-        // Unregister FCM token if available
-        const token = await getFCMToken()
-        if (token) {
-          try {
-            await fetch('/api/unregister-fcm-token', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ token }),
-            })
-          } catch (error) {
-            // Fail silently - don't block logout on FCM error
-            console.error('FCM unregistration error:', error)
-          }
+        console.info('[FCM] Logout started; attempting token unregister')
+        const token = getStoredFCMToken() ?? popPendingFCMToken()
+        try {
+          await fetch('/api/unregister-fcm-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(token ? { token } : {}),
+          })
+          clearCachedFCMToken()
+          console.info('[FCM] Unregister request sent during logout')
+        } catch (error) {
+          // Fail silently - don't block logout on FCM error
+          console.error(
+            '[FCM] Unregistration request failed during logout:',
+            error,
+          )
         }
       } catch (error) {
         // Fail silently for FCM errors
-        console.error('FCM error:', error)
+        console.error('[FCM] Error while resolving token during logout:', error)
       }
 
       try {

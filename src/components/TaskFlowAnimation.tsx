@@ -688,9 +688,9 @@ export default function TaskFlowAnimation() {
                   justifyContent: 'space-between',
                   padding: '8px 10px',
                   borderRadius: 'calc(var(--radius) - 4px)',
-                  border: `1px solid ${focusSession ? 'oklch(0.6056 0.2189 292.7172)' : 'var(--border)'}`,
+                  border: `1px solid ${focusSession ? 'var(--primary)' : 'var(--border)'}`,
                   background: focusSession
-                    ? 'color-mix(in oklch, oklch(0.6056 0.2189 292.7172) 8%, transparent)'
+                    ? 'color-mix(in oklch, var(--primary) 8%, transparent)'
                     : 'var(--input)',
                   cursor: 'pointer',
                   transition: 'border-color 0.25s ease, background 0.25s ease',
@@ -702,7 +702,7 @@ export default function TaskFlowAnimation() {
                     size={14}
                     color={
                       focusSession
-                        ? 'oklch(0.6056 0.2189 292.7172)'
+                        ? 'var(--primary)'
                         : 'var(--muted-foreground)'
                     }
                     style={{ transition: 'color 0.25s ease', flexShrink: 0 }}
@@ -739,7 +739,7 @@ export default function TaskFlowAnimation() {
                     height: 18,
                     borderRadius: 99,
                     background: focusSession
-                      ? 'oklch(0.6056 0.2189 292.7172)'
+                      ? 'var(--primary)'
                       : 'var(--border)',
                     position: 'relative',
                     flexShrink: 0,
@@ -823,15 +823,15 @@ export default function TaskFlowAnimation() {
             <div
               style={{
                 border: focusSession
-                  ? '1.5px solid oklch(0.6056 0.2189 292.7172)'
+                  ? '1.5px solid var(--primary)'
                   : '1px solid var(--border)',
                 borderRadius: 'var(--radius)',
                 padding: '16px 18px',
                 background: focusSession
-                  ? 'color-mix(in oklch, oklch(0.6056 0.2189 292.7172) 5%, var(--card))'
+                  ? 'color-mix(in oklch, var(--primary) 5%, var(--card))'
                   : 'var(--card)',
                 boxShadow: focusSession
-                  ? '0 0 0 3px color-mix(in oklch, oklch(0.6056 0.2189 292.7172) 15%, transparent)'
+                  ? '0 0 0 3px color-mix(in oklch, var(--primary) 15%, transparent)'
                   : 'var(--shadow-sm)',
                 transition:
                   'border-color 0.4s ease, box-shadow 0.4s ease, background 0.4s ease',
@@ -1241,8 +1241,8 @@ function DBStack({ doneSteps, activeStep, totalSteps }: DBStackProps) {
       cy={baseY}
       rx={rx}
       ry={ry}
-      fill="#f1f5f9"
-      stroke="#cbd5e1"
+      fill="var(--muted)"
+      stroke="var(--border)"
       strokeWidth={1}
     />
   )
@@ -1600,16 +1600,8 @@ function PeakChart({ data }: { data: Array<number> }) {
       >
         <defs>
           <linearGradient id="tfPeakGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="0%"
-              stopColor="oklch(0.6056 0.2189 292.7172)"
-              stopOpacity="0.28"
-            />
-            <stop
-              offset="100%"
-              stopColor="oklch(0.6056 0.2189 292.7172)"
-              stopOpacity="0"
-            />
+            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.28" />
+            <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
           </linearGradient>
         </defs>
         <path d={area} fill="url(#tfPeakGrad)" />

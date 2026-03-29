@@ -1,12 +1,12 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import { Loader, ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Loader } from 'lucide-react'
 import { FcGoogle } from 'react-icons/fc'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { signInWithGoogle } from '@/lib/auth/client'
-import { getSessionUser } from '@/lib/sessions'
+import { getSessionUser } from '@/lib/session-user'
 
 export const Route = createFileRoute('/register')({
   beforeLoad: async () => {

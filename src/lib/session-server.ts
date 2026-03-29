@@ -7,7 +7,7 @@ import '@tanstack/react-start/server-only'
 
 import { cache } from 'react'
 import { getRequestHeaders } from '@tanstack/react-start/server'
-import { auth } from '@/lib/auth-server'
+import { auth } from '@/lib/better-auth-server'
 
 /**
  * Get current session (server-side only)

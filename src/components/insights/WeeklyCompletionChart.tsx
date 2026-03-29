@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react'
 import { endOfWeek, startOfWeek, subWeeks } from 'date-fns'
-import { useTheme } from 'next-themes'
 import {
   Bar,
   BarChart,
   CartesianGrid,
+  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -13,6 +13,7 @@ import {
 import { SectionHeader } from './SectionHeader'
 import type { Task, WeekDataPoint } from './types'
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
+import { useChartColors } from '@/hooks/useChartColors'
 
 interface WeeklyCompletionChartProps {
   tasks: Array<Task>
@@ -21,7 +22,7 @@ interface WeeklyCompletionChartProps {
 export const WeeklyCompletionChart: React.FC<WeeklyCompletionChartProps> = ({
   tasks,
 }) => {
-  const { theme } = useTheme()
+  const colors = useChartColors()
 
   const weeks = useMemo<Array<WeekDataPoint>>(() => {
     const today = new Date()
@@ -43,35 +44,19 @@ export const WeeklyCompletionChart: React.FC<WeeklyCompletionChartProps> = ({
     return result
   }, [tasks])
 
-  const isDark = theme === 'dark'
   const chartConfig = {
     scheduled: {
       label: 'Scheduled',
-      theme: {
-        light: '#d1d5db',
-        dark: '#6b7280',
-      },
+      color: colors.scheduled,
     },
     completed: {
       label: 'Completed',
-      theme: {
-        light: '#f59e0b',
-        dark: '#fbbf24',
-      },
+      color: colors.completed,
     },
     missed: {
       label: 'Missed',
-      theme: {
-        light: '#ef4444',
-        dark: '#fca5a5',
-      },
+      color: colors.missed,
     },
-  }
-
-  const colors = {
-    scheduled: isDark ? '#6b7280' : '#d1d5db',
-    completed: isDark ? '#fbbf24' : '#f59e0b',
-    missed: isDark ? '#fca5a5' : '#ef4444',
   }
 
   return (
@@ -80,67 +65,70 @@ export const WeeklyCompletionChart: React.FC<WeeklyCompletionChartProps> = ({
         title="Weekly Breakdown"
         subtitle="Scheduled · Completed · Missed per week"
       />
-      <ChartContainer config={chartConfig} className="h-[300px] w-full">
+      <ChartContainer config={chartConfig} className="h-[320px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={weeks}
-            barCategoryGap="28%"
-            barGap={2}
-            margin={{ top: 8, right: 4, left: -18, bottom: 0 }}
+            barCategoryGap="20%"
+            barGap={4}
+            margin={{ top: 16, right: 8, left: -12, bottom: 8 }}
           >
             <CartesianGrid
               strokeDasharray="3 3"
               vertical={false}
-              stroke="hsl(var(--border))"
+              stroke="hsl(var(--color-border))"
+              opacity={0.4}
             />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+              tick={{
+                fontSize: 12,
+                fill: 'hsl(var(--color-muted-foreground))',
+              }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+              tick={{
+                fontSize: 12,
+                fill: 'hsl(var(--color-muted-foreground))',
+              }}
               axisLine={false}
               tickLine={false}
               allowDecimals={false}
             />
             <Tooltip
-              cursor={{ fill: 'hsl(var(--primary) / 0.12)', radius: 4 }}
+              cursor={{ fill: 'hsl(var(--color-muted) / 0.5)', radius: 6 }}
               content={<ChartTooltipContent hideLabel hideIndicator />}
             />
+            <Legend wrapperStyle={{ paddingTop: '16px' }} iconType="circle" />
             <Bar
               dataKey="scheduled"
-              fill={colors.scheduled}
-              stroke="hsl(var(--border))"
-              strokeWidth={0.5}
-              radius={[3, 3, 0, 0]}
+              fill="hsl(var(--color-chart-3))"
+              radius={[6, 6, 0, 0]}
+              barSize={22}
+              animationDuration={600}
+              isAnimationActive={true}
             />
             <Bar
               dataKey="completed"
-              fill={colors.completed}
-              radius={[3, 3, 0, 0]}
+              fill="hsl(var(--color-chart-1))"
+              radius={[6, 6, 0, 0]}
+              barSize={22}
+              animationDuration={600}
+              isAnimationActive={true}
             />
-            <Bar dataKey="missed" fill={colors.missed} radius={[3, 3, 0, 0]} />
+            <Bar
+              dataKey="missed"
+              fill="hsl(var(--color-destructive))"
+              radius={[6, 6, 0, 0]}
+              barSize={22}
+              animationDuration={600}
+              isAnimationActive={true}
+            />
           </BarChart>
         </ResponsiveContainer>
       </ChartContainer>
-
-      {/* Manual legend */}
-      <div className="flex items-center gap-4 mt-3 justify-end">
-        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-          <span className="w-2.5 h-2.5 rounded-xs shrink-0 bg-slate-400 dark:bg-slate-600" />
-          Scheduled
-        </span>
-        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-          <span className="w-2.5 h-2.5 rounded-xs shrink-0 bg-blue-600 dark:bg-blue-400" />
-          Completed
-        </span>
-        <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-          <span className="w-2.5 h-2.5 rounded-xs shrink-0 bg-red-600 dark:bg-red-400" />
-          Missed
-        </span>
-      </div>
     </div>
   )
 }

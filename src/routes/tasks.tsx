@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
 import { getTasks } from '@/action/get-task'
-import { checkRouteAuth } from '@/lib/auth-check'
+import { checkRouteAuth } from '@/lib/route-access'
 import { usePollOnVisible } from '@/hooks/usePollOnVisible'
 import { useTasksByStatus } from '@/hooks/useTasksByStatus'
 import TasksHeader from '@/components/Task/TasksHeader'

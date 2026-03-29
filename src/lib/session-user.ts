@@ -2,11 +2,11 @@
  * Session management - ISOMORPHIC
  * Client-side server function to get session data
  *
- * Server-only logic moved to sessions.server.ts
+ * Server-only logic moved to session-server.ts
  */
 
 import { createServerFn } from '@tanstack/react-start'
-import { getCurrentSession } from '@/lib/sessions.server'
+import { getCurrentSession } from '@/lib/session-server'
 
 /**
  * Server function for getting session from client

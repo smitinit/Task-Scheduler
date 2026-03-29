@@ -1,7 +1,7 @@
 ﻿import { createFileRoute, redirect } from '@tanstack/react-router'
 import { Suspense, lazy } from 'react'
 import { getTasks } from '@/action/get-task'
-import { checkRouteAuth } from '@/lib/auth-check'
+import { checkRouteAuth } from '@/lib/route-access'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 
 // Lazy load Insights component to defer loading heavy chart libraries

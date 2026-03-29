@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { startOfToday } from 'date-fns'
 import { and, eq, gte } from 'drizzle-orm'
-import { getCurrentSession } from '@/lib/sessions.server'
+import { getCurrentSession } from '@/lib/session-server'
 import { db } from '@/db'
 import { tasks } from '@/db/task'
 import { errors } from '@/lib/errors'

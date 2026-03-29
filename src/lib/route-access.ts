@@ -11,7 +11,7 @@ import { createServerFn } from '@tanstack/react-start'
  *
  * Usage in route beforeLoad:
  * ```ts
- * import { checkRouteAuth } from '@/lib/auth-check'
+ * import { checkRouteAuth } from '@/lib/route-access'
  *
  * beforeLoad: async () => {
  *   const user =await checkRouteAuth()
@@ -22,7 +22,7 @@ import { createServerFn } from '@tanstack/react-start'
 export const checkRouteAuth = createServerFn({ method: 'GET' }).handler(
   async () => {
     // Dynamic import to avoid static analysis issues with .server.ts files
-    const { getCurrentSession } = await import('@/lib/sessions.server')
+    const { getCurrentSession } = await import('@/lib/session-server')
     const { user } = await getCurrentSession()
     return user
   },

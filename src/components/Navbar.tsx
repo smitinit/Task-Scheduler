@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
 import LogoutButton from './LogoutButton'
-import { FCMInitializer } from './FCMInitilizer'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { useUser } from '@/hooks/useUser'
@@ -27,7 +26,6 @@ export default function Navbar() {
           <Link to="/" className="text-lg font-semibold tracking-tight">
             Task Scheduler
           </Link>
-          {user && <FCMInitializer />}
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-6">
             {user &&

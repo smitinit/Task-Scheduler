@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { and, eq } from 'drizzle-orm'
 import { db } from '@/db'
 import { fcmTokens } from '@/db/fcmTokens'
-import { getCurrentSession } from '@/lib/sessions.server'
+import { getCurrentSession } from '@/lib/session-server'
 
 export const Route = createFileRoute('/api/unregister-fcm-token')({
   server: {
@@ -11,9 +11,19 @@ export const Route = createFileRoute('/api/unregister-fcm-token')({
         const { user } = await getCurrentSession()
         if (!user) return new Response('Unauthorized', { status: 401 })
 
-        const { token } = await request.json()
+        const body = await request.json().catch(() => ({}))
+        const token = body?.token as string | undefined
 
-        if (!token) return new Response('Token required', { status: 400 })
+        if (!token) {
+          // Fallback: clear all tokens for this user when specific token cannot be resolved.
+          console.info(
+            `[FCM] Unregister request without token; clearing all tokens for user ${user.id}`,
+          )
+          await db.delete(fcmTokens).where(eq(fcmTokens.userId, user.id))
+          return Response.json({ success: true, clearedAll: true })
+        }
+
+        console.info(`[FCM] Unregistering token for user ${user.id}`)
 
         await db
           .delete(fcmTokens)

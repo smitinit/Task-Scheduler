@@ -1,27 +1,28 @@
+import { Card } from '@/components/ui/card'
+
 export function StatCard({
   label,
   value,
   icon: Icon,
-  accent,
 }: {
   label: string
   value: number | string
   icon: React.ElementType
-  accent: string
 }) {
   return (
-    <div className="glass-widget border-none flex items-center gap-3">
-      <div
-        className={`w-9 h-9 rounded-md flex items-center justify-center ${accent}`}
-      >
-        <Icon className="w-4 h-4" />
+    <Card className="h-24 flex items-center px-5 hover:bg-muted/40 transition-colors duration-200">
+      <div className="flex items-center gap-3 w-full">
+        <div className="p-2.5 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+          <Icon className="h-5 w-5 text-primary" />
+        </div>
+
+        <div className="flex flex-col justify-center flex-1 min-w-0">
+          <div className="text-2xl font-semibold leading-none tabular-nums">
+            {value}
+          </div>
+          <div className="text-xs text-muted-foreground">{label}</div>
+        </div>
       </div>
-      <div>
-        <p className="text-2xl font-mono font-bold tabular-nums leading-none">
-          {value}
-        </p>
-        <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
-      </div>
-    </div>
+    </Card>
   )
 }

@@ -1,7 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { and, eq, ne } from 'drizzle-orm'
 import { db } from '@/db'
 import { fcmTokens } from '@/db/fcmTokens'
-import { getCurrentSession } from '@/lib/sessions.server'
+import { getCurrentSession } from '@/lib/session-server'
 
 export const Route = createFileRoute('/api/register-fcm-token')({
   server: {
@@ -19,9 +20,13 @@ export const Route = createFileRoute('/api/register-fcm-token')({
             token,
           })
           .onConflictDoUpdate({
-            target: fcmTokens.userId,
-            set: { token },
+            target: fcmTokens.token,
+            set: { userId: user.id },
           })
+
+        await db
+          .delete(fcmTokens)
+          .where(and(eq(fcmTokens.userId, user.id), ne(fcmTokens.token, token)))
 
         return Response.json({ success: true })
       },
